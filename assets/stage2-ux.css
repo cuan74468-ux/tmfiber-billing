@@ -1,0 +1,20 @@
+/* Tahap 2 — polish mobile, keep SUNLIME V1.6. No financial actions. */
+.menu-help{margin:0 0 17px;color:#607866;font-size:13px;line-height:1.5}
+#mainContent,#panel,.sheet,.bill-section,.setting-list{min-width:0}
+.login-body input{font-size:16px}
+.mobile-nav a,.filter{touch-action:manipulation}
+.quick-action svg{flex:none}
+@media(max-width:760px){
+ .hero-inner,.content{padding-left:16px;padding-right:16px}
+ .hero-heading{align-items:flex-start}
+ .section-line{gap:8px}
+ .quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .quick-action{min-width:0;padding:11px 3px}
+ .quick-action span,.menu-tile small,.notice p{overflow-wrap:anywhere}
+ .filter,.menu-tile,.setting-item,.setting-item>div{min-width:0}
+ .menu-help{font-size:12px}
+}
+@media(min-width:360px) and (max-width:412px){
+ .quick-action{font-size:10px}
+ .mobile-nav a{min-width:0}
+}

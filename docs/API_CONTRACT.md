@@ -1,23 +1,51 @@
-# TMfiber V1 — Kontrak API (usulan, belum diimplementasikan)
+# TMfiber Billing — Kontrak API GAS (Tahap 2; belum aktif)
 
-Frontend GitHub Pages **tidak boleh** membaca Sheets secara langsung atau memanggil endpoint router.
+**Sumber yang disepakati:** Dokumen Sinkronisasi TMfiber termasuk Bab 8; satu endpoint GAS HTTP POST. Ini menggantikan rancangan REST sebelumnya. Tidak ada panggilan jaringan baru pada frontend Tahap 2.
 
-## Batas keamanan
-- `POST /session/otp/request`: nomor pengguna terdaftar, rate limiting, pesan respons non-enumerating.
-- `POST /session/otp/verify`: OTP satu kali, TTL, batas percobaan, session acak dengan expiration.
-- `GET /session/me`: identitas dan role dari server, bukan parameter client.
-- `GET /dashboard`: KPI terotorisasi.
-- `GET /customers`, `GET /invoices`, `GET /payments`, `GET /cashbook`, `GET /network`: pagination/filter di sisi server.
-- `POST /payments/confirm`: Owner only, bukti mutasi terverifikasi, idempotency key, lock dan audit.
-- `POST /invoices/generate`: Owner only, per pelanggan-periode sekali.
-- `POST /network/commands`: Owner only, otorisasi kuat, dry-run lebih dulu.
-- `POST /session/logout`: invalidasi sesi.
+## 1. Request tunggal
+```http
+POST {GAS_WEB_APP_URL}
+Content-Type: text/plain;charset=utf-8
 
-Jika memakai GAS Web App, implementasi konkret perlu memastikan browser dapat menggunakan API dengan aman; redirect ContentService/CORS/cookies harus diuji. **Jangan menggunakan `mode: no-cors` sebagai jalan pintas**. Pertimbangkan server proxy/API gateway jika model keamanan GAS tidak memenuhi kebutuhan.
+{"action":"get_dashboard_data","session_token":"<SESSION_OPAQUE>","payload":{}}
+```
+URL Web App bukan secret autentikasi. Jangan pernah menyematkan API key, nomor pelanggan atau ScriptProperties pada frontend publik.
 
-## Respons terstruktur
-Sukses: `{ "ok": true, "data": { ... } }`. Gagal: `{ "ok": false, "error": { "code": "...", "message": "..." } }`.
-Jangan masukkan secret, token router, atau nomor WA pribadi ke respons publik.
+## 2. Respons standar
+**Sukses**:
+```json
+{"status":"SUCCESS","code":200,"message":"Berhasil.","data":{}}
+```
+**Gagal**:
+```json
+{"status":"ERROR","code":403,"message":"Akses ditolak.","data":{}}
+```
+Semua action mengembalikan tepat envelope `status` (SUCCESS/ERROR), `code` numerik, `message` string, `data` object. Format `ok` boolean **bukan** kontrak TMfiber.
 
-## Status saat commit
-Belum ada endpoint production yang diikat ke UI; tidak ada URL rahasia disimpan dalam frontend.
+## 3. Daftar action (akan diimplementasikan setelah Tahap 2)
+| action | Autentikasi dan izin | Tahap |
+|---|---|---|
+| `request_otp`, `verify_otp` | nomor terdaftar, rate limit, OTP sekali pakai, TTL | 3 |
+| `logout` | sesi aktif, revokasi | 3 |
+| `get_dashboard_data`, `get_customers`, `get_invoices` | sesi server dan RBAC | 3 |
+| `save_customer`, `generate_monthly_bills` | OWNER; validasi, sanitasi, idempotency | 4 |
+| `mark_as_paid`, `record_installment` | OWNER/KOLEKTOR terbatas; lock+ledger | 4–5 |
+| `get_cashbook`, `save_cash_entry`, `confirm_collector_deposit` | OWNER; akses kolektor dibatasi | 5 |
+| `get_network_status` | OWNER/TEKNISI | 7 |
+| `get_mikrotik_commands` | token router terpisah, DRY_RUN=true | 7 |
+
+## 4. Persyaratan keamanan
+- Server memverifikasi HMAC-SHA256 atau validitas session token opak, expiry, revokasi, dan role pada **setiap** request. Jangan percaya role/tenant_id dari frontend.
+- `Content-Type: text/plain;charset=utf-8` menghindari jenis preflight tertentu, tetapi **tidak menjamin browser CORS dan redirect GAS dapat membaca respons**. Tahap 3 wajib proof-of-concept dari GitHub Pages, tanpa `mode: no-cors` atau JSONP.
+- Untuk penulisan finansial gunakan `LockService.getScriptLock()`, idempotency key, aturan anti-double-submit, dan catat `Audit_Log` dengan `prev_hash` serta `row_hash`. Hash chaining pada Sheets adalah tamper-evident terbatas, bukan immutable.
+- Simpan token Fonnte, QRIS, MikroTik dan secret penandatangan di ScriptProperties GAS. Lindungi data pelanggan agar tidak pernah menjadi file publik.
+- Formula injection ditangani per-field sebagai teks yang aman tanpa merusak nomor WhatsApp berawalan '+'.
+
+## 5. Bab 8, kontrak tahap lanjut
+- Portal cek tagihan `?inv=ID_TAGIHAN&sig=HMAC_SHORT` memerlukan expiry, pembatasan akses, tanda tangan server-side, tanpa PII di URL/respons tidak terotorisasi.
+- Status `CICIL` tetap pada kolom H Tagihan; `jumlah_terbayar`, `sisa_hutang`, `komisi_biller` akan ditambah di kanan kolom L melalui migrasi forward-only dan ledger pembayaran terpisah.
+- Komisi hanya dihitung satu kali saat `LUNAS`; reversal, setoran dan audit wajib konsisten.
+- QRIS statis perlu verifikasi bank; jangan menganggap nominal unik membuatnya menjadi QRIS dinamis.
+
+## 6. Status gate
+Belum ada API Tahap 3 yang diaktifkan, tidak ada perubahan Google Sheets/GAS/QRIS/router pada Tahap 2. UAT dan approval Owner wajib sebelum perubahan transaksi.
