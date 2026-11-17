@@ -35,6 +35,7 @@ try {
     }else{
       await page.goto("http://127.0.0.1:8765/#menu",{waitUntil:"networkidle"});
     }
+    await page.locator('.menu-tile[href="#mikrotik"]').waitFor({state:"visible",timeout:5000});
     assert.equal(await page.locator('.menu-tile[href="#mikrotik"]').count(),1);
     assert.equal(await page.locator('.menu-tile[href="#audit"]').count(),1);
     await page.locator("#openLogin").click();
