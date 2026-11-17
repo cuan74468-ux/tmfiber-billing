@@ -4,9 +4,9 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f7f8fa",
-  "theme_color": "#244a69",
-  "description": "Workspace administrasi TMfiber",
+  "background_color": "#f4f7fa",
+  "theme_color": "#118eea",
+  "description": "Billing dan operasional WiFi TMfiber",
   "icons": [
     {
       "src": "assets/icon.svg",
