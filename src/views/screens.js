@@ -10,7 +10,7 @@ function navItem(r){
   a.innerHTML=icon(r.symbol)+'<span>'+r.label+'</span>';return a;
 }
 export function navigate(){
-  ROUTES.forEach(r=>q('sideNav').append(navItem(r)));
+  ROUTES.filter(r=>!['mikrotik','audit'].includes(r.id)).forEach(r=>q('sideNav').append(navItem(r)));
   ['beranda','tagihan','pelanggan','kas','menu'].forEach(id=>q('mobileNav').append(navItem(ROUTES.find(r=>r.id===id))));
 }
 function noData(title,message){
@@ -35,7 +35,7 @@ function buttonDisabled(text){
   return '<button type="button" class="small-primary" disabled>'+icon('plus')+' '+text+'</button>';
 }
 export function home(){
-  return quickActions()+'<section class="bill-section"><div class="section-line"><h2>Tagihan pelanggan</h2><span class="tiny-lock">'+icon('shield')+' Privat</span></div>'+listFilters()+searchField('Cari pelanggan atau ID PPPoE')+noData('Tagihan belum ditampilkan','Masuk sebagai petugas terdaftar untuk melihat pelanggan dan status pembayaran.')+'</section>';
+  return quickActions()+'<section class="bill-section"><div class="section-line"><h2>Tagihan pelanggan</h2><span class="tiny-lock">'+icon('shield')+' Privat</span></div>'+listFilters()+searchField('Cari nama atau nomor pelanggan')+noData('Tagihan belum ditampilkan','Masuk sebagai petugas terdaftar untuk melihat pelanggan dan status pembayaran.')+'</section>';
 }
 export function directory(kind){
   const map={
