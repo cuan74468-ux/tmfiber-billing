@@ -1,8 +1,8 @@
 "use strict";
 // Offline cache contains ONLY the static, public application shell.
 // Do not add API responses, customer records, login sessions, user-generated images, or authenticated pages.
-const CACHE="tmfiber-public-shell-v5";
-const PUBLIC_FILES=["./","./index.html","./styles.css","./assets/ngulik-inspired.css","./assets/sunlime-mobile.css","./assets/stage2-ux.css","./src/app.js","./src/core/navigation.js","./src/views/screens.js","./assets/icon.svg","./manifest.webmanifest"];
+const CACHE="tmfiber-public-shell-v6";
+const PUBLIC_FILES=["./","./index.html","./styles.css","./src/app.js","./src/core/navigation.js","./src/views/screens.js","./assets/icon.svg","./manifest.webmanifest"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(PUBLIC_FILES)).then(()=>self.skipWaiting()));
 });
@@ -19,7 +19,7 @@ self.addEventListener("fetch",event=>{
   const base=new URL(self.registration.scope);
   if(!url.pathname.startsWith(base.pathname))return;
   const path=url.pathname.slice(base.pathname.length);
-  const allowed=new Set(["","index.html","styles.css","assets/ngulik-inspired.css","assets/sunlime-mobile.css","assets/stage2-ux.css","src/app.js","src/core/navigation.js","src/views/screens.js","assets/icon.svg","manifest.webmanifest"]);
+  const allowed=new Set(["","index.html","styles.css","src/app.js","src/core/navigation.js","src/views/screens.js","assets/icon.svg","manifest.webmanifest"]);
   if(!allowed.has(path)||url.search)return;
   event.respondWith((async()=>{
     try{

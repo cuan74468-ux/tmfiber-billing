@@ -20,7 +20,7 @@ function quickAction(name,symbol){
   return '<button disabled type="button" class="quick-action">'+icon(symbol)+'<span>'+name+'</span></button>';
 }
 function quickActions(){
-  return '<section class="quick-section"><div class="section-line"><h2>Aksi cepat</h2><small>Login untuk menggunakan</small></div><div class="quick-grid">'+quickAction('Tagih WA','send')+quickAction('QRIS','wallet')+quickAction('Tambah','plus')+quickAction('Kas','cash')+'</div></section>';
+  return '<section class="quick-section"><div class="section-line"><h2>Akses Cepat</h2><small>Perlu login</small></div><div class="quick-grid">'+quickAction('Tagih WA','send')+quickAction('QRIS','wallet')+quickAction('Tambah','plus')+quickAction('Kas','cash')+'</div></section>';
 }
 function listFilters(){
   return '<div class="filter-tabs" role="group" aria-label="Status tagihan">'+[['belum','Belum bayar'],['lunas','Sudah lunas'],['semua','Semua']].map(([key,title])=>'<button type="button" class="filter'+(currentFilter===key?' selected':'')+'" data-filter="'+key+'" aria-pressed="'+(currentFilter===key)+'">'+title+'</button>').join('')+'</div>';
@@ -63,8 +63,8 @@ export function settings(){
 }
 export function menuScreen(){
   const groups=[
-    ['Pekerjaan harian', ['beranda','tagihan','pelanggan','pembayaran','kas']],
-    ['Khusus pemilik dan teknisi', ['mikrotik','audit','pengaturan']]
+    ['BILLING & KEUANGAN', ['beranda','tagihan','pelanggan','pembayaran','kas']],
+    ['INFRASTRUKTUR & SISTEM', ['mikrotik','audit','pengaturan']]
   ];
   return '<section class="menu-screen"><p class="menu-help">Pilih pekerjaan. Akses petugas diperiksa setelah login.</p>'+groups.map(([title,ids])=>'<div class="menu-group"><h2>'+title+'</h2><div class="menu-grid">'+ids.map(id=>{
     const route=ROUTES.find(r=>r.id===id);
@@ -72,13 +72,10 @@ export function menuScreen(){
   }).join('')+'</div></div>').join('')+'</section>';
 }
 export function heroSummary(id){
-  if(id==='beranda'){
-    return '<div class="balance"><div class="balance-top"><span>Uang WiFi bulan ini</span><span class="private-label">'+icon('lock')+' Privat</span></div><div class="balance-main">Rp •••••••</div><div class="balance-bottom"><span>Target tagihan periode ini</span><span>—</span></div><div class="progress-track"><span></span></div></div>';
-  }
-  if(id==='kas'){
-    return '<div class="metrics">'+screens.kas.metrics.map(([name,s])=>'<div class="metric"><span>'+icon(s)+' '+name+'</span><b>—</b></div>').join('')+'</div>';
-  }
-  return '<div class="compact-summary"><span class="compact-glyph">'+icon('shield')+'</span><div><strong>Perlu masuk akun</strong><p>Informasi tersedia setelah login.</p></div></div>';
+ const item=(label,iconName,tone)=>'<div class="stat '+tone+'"><div class="stat-top"><span class="stat-label">'+label+'</span><span class="stat-icon">'+icon(iconName)+'</span></div><span class="stat-value">—</span><span class="stat-caption">Login untuk melihat data</span></div>';
+ if(id==='beranda')return '<div class="stats">'+item('Total Pelanggan','users','blue')+item('Belum Bayar','clock','amber')+item('Sudah Lunas','check','teal')+item('Penerimaan Bulan Ini','wallet','violet')+'</div>';
+ if(id==='kas')return '<div class="stats">'+item('Pemasukan','wallet','blue')+item('Pengeluaran','cash','amber')+item('Sisa Kas','check','teal')+'</div>';
+ if(id==='tagihan')return '<div class="stats">'+item('Total Tagihan','invoice','blue')+item('Belum Bayar','clock','amber')+item('Sudah Lunas','check','teal')+'</div>';
+ return '<div class="compact-summary">'+icon('shield')+'<div><strong>Akses privat</strong><p>Informasi tersedia untuk petugas setelah login.</p></div></div>';
 }
-
 export function setFilter(value){if(['belum','lunas','semua'].includes(value))currentFilter=value;}

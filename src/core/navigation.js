@@ -19,8 +19,8 @@ export const ICON={
 };
 export const icon=name=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">'+(ICON[name]||ICON.shield)+'</svg>';
 export const ROUTES=[
-  {id:'beranda',label:'Beranda',symbol:'home',title:'Halo, TMfiber!',desc:'Pantau uang WiFi, tagihan, dan pelanggan.'},
-  {id:'pelanggan',label:'Pelanggan',symbol:'users',title:'Pelanggan',desc:'Data pelanggan dan paket internet.'},
+  {id:'beranda',label:'Dashboard',symbol:'home',title:'Dashboard',desc:'Ringkasan pelanggan, tagihan, dan penerimaan WiFi.'},
+  {id:'pelanggan',label:'Data Pelanggan',symbol:'users',title:'Pelanggan',desc:'Data pelanggan dan paket internet.'},
   {id:'tagihan',label:'Tagihan',symbol:'invoice',title:'Tagihan',desc:'Pantau pembayaran dan jatuh tempo.'},
   {id:'pembayaran',label:'Pembayaran',symbol:'wallet',title:'Pembayaran',desc:'Verifikasi pembayaran dan setoran.'},
   {id:'kas',label:'Kas',symbol:'cash',title:'Kas WiFi',desc:'Pemasukan, pengeluaran dan setoran.'},
