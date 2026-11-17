@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#244a69"><meta name="description" content="TMfiber — Workspace Billing dan Manajemen Internet">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>TMfiber — Billing Workspace</title>
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css"><script defer src="./src/app.js"></script>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar" aria-label="Navigasi utama">
+  <a href="#beranda" class="brand"><span class="brand-mark">T<span class="dot">.</span></span><span><strong>TMfiber</strong><small>Billing workspace</small></span></a>
+  <div class="workspace"><span class="ws-icon">T</span><span><strong>Workspace</strong><small>TMfiber · Owner</small></span><span class="chev">⌄</span></div>
+  <p class="nav-label">WORKSPACE</p>
+  <nav id="sideNav"></nav>
+  <div class="sidefoot"><div class="secure-dot"></div><span>Data pribadi terlindungi<br><small>Login diperlukan untuk akses</small></span></div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="bread"><span>Workspace</span><span class="slash">/</span><b id="crumb">Beranda</b></div><div class="top-actions"><span class="env">Belum terhubung</span><button class="avatar" aria-label="Informasi akun">TF</button></div></header>
+<div class="content">
+<section id="welcome" class="heading"><div><div class="eyebrow">TMFIBER · WORKSPACE</div><h1 id="pageTitle">Selamat datang di TMfiber<span class="accent">.</span></h1><p id="pageDesc">Kendali operasional jaringan dalam satu tempat.</p></div><div class="today" id="today"></div></section>
+<section class="locknotice" role="status"><span class="lockicon">⌁</span><div><b>Workspace aman — koneksi akun diperlukan</b><p>Data pelanggan, tagihan, dan pembayaran hanya dapat ditampilkan setelah autentikasi backend terverifikasi. Tidak ada data nyata yang ditanam di halaman publik ini.</p></div><button id="openLogin" class="primary">Masuk akun <span aria-hidden="true">→</span></button></section>
+<section id="panel" aria-live="polite"></section>
+<footer class="footer"><span>TMfiber Billing Workspace</span><span>Privasi & keamanan menjadi prioritas</span></footer>
+</div>
+</main>
+<nav class="mobile-nav" id="mobileNav" aria-label="Navigasi seluler"></nav>
+</div>
+<dialog id="loginDialog" aria-labelledby="loginTitle"><form method="dialog" class="login"><button class="close" value="cancel" aria-label="Tutup">×</button><span class="loginicon">T.</span><div class="eyebrow">AKSES TERLINDUNGI</div><h2 id="loginTitle">Masuk ke TMfiber</h2><p>Autentikasi OTP WhatsApp akan tersedia setelah integrasi backend diuji dan diaktifkan.</p><label for="phone">Nomor WhatsApp terdaftar</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" disabled><button class="primary full" disabled>Kirimi kode OTP</button><small>Login belum diaktifkan. Tidak ada data akun diproses dari halaman ini.</small></form></dialog>
+</body>
+</html>
