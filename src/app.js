@@ -20,11 +20,11 @@ const ICON={
 };
 const icon=name=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">'+(ICON[name]||ICON.shield)+'</svg>';
 const ROUTES=[
-  {id:'beranda',label:'Beranda',symbol:'home',title:'Ringkasan WiFi',desc:'Kelola tagihan dan operasional dengan mudah.'},
+  {id:'beranda',label:'Beranda',symbol:'home',title:'Halo, TMfiber!',desc:'Pantau uang WiFi, tagihan, dan pelanggan.'},
   {id:'pelanggan',label:'Pelanggan',symbol:'users',title:'Pelanggan',desc:'Data pelanggan dan paket internet.'},
   {id:'tagihan',label:'Tagihan',symbol:'invoice',title:'Tagihan',desc:'Pantau pembayaran dan jatuh tempo.'},
   {id:'pembayaran',label:'Pembayaran',symbol:'wallet',title:'Pembayaran',desc:'Verifikasi pembayaran dan setoran.'},
-  {id:'kas',label:'Kas',symbol:'cash',title:'Kas operasional',desc:'Pemasukan, pengeluaran dan setoran.'},
+  {id:'kas',label:'Kas',symbol:'cash',title:'Kas WiFi',desc:'Pemasukan, pengeluaran dan setoran.'},
   {id:'mikrotik',label:'Jaringan',symbol:'signal',title:'Jaringan WiFi',desc:'Pantau layanan PPPoE dengan aman.'},
   {id:'audit',label:'Riwayat',symbol:'audit',title:'Riwayat aktivitas',desc:'Catatan perubahan dan pemeriksaan.'},
   {id:'pengaturan',label:'Pengaturan',symbol:'settings',title:'Pengaturan',desc:'Kelola akses dan integrasi layanan.'},
@@ -52,7 +52,7 @@ function quickAction(name,symbol){
   return '<button disabled type="button" class="quick-action">'+icon(symbol)+'<span>'+name+'</span></button>';
 }
 function quickActions(){
-  return '<section class="quick-section"><div class="section-line"><h2>Aksi cepat</h2><small>Akses setelah login</small></div><div class="quick-grid">'+quickAction('Tagih WA','send')+quickAction('QRIS','wallet')+quickAction('Pelanggan','plus')+quickAction('Catat kas','cash')+'</div></section>';
+  return '<section class="quick-section"><div class="section-line"><h2>Aksi cepat</h2><small>Login untuk menggunakan</small></div><div class="quick-grid">'+quickAction('Tagih WA','send')+quickAction('QRIS','wallet')+quickAction('Tambah','plus')+quickAction('Kas','cash')+'</div></section>';
 }
 function listFilters(){
   return '<div class="filter-tabs" role="group" aria-label="Status tagihan">'+[['belum','Belum bayar'],['lunas','Sudah lunas'],['semua','Semua']].map(([key,title])=>'<button type="button" class="filter'+(currentFilter===key?' selected':'')+'" data-filter="'+key+'" aria-pressed="'+(currentFilter===key)+'">'+title+'</button>').join('')+'</div>';
@@ -105,7 +105,7 @@ function menuScreen(){
 }
 function heroSummary(id){
   if(id==='beranda'){
-    return '<div class="balance"><div class="balance-top"><span>Uang WiFi terkumpul</span><span class="private-label">'+icon('lock')+' Privat</span></div><div class="balance-main">Rp •••••••</div><div class="balance-bottom"><span>Target tagihan periode ini</span><span>—</span></div><div class="progress-track"><span></span></div></div>';
+    return '<div class="balance"><div class="balance-top"><span>Uang WiFi bulan ini</span><span class="private-label">'+icon('lock')+' Privat</span></div><div class="balance-main">Rp •••••••</div><div class="balance-bottom"><span>Target tagihan periode ini</span><span>—</span></div><div class="progress-track"><span></span></div></div>';
   }
   if(id==='kas'){
     return '<div class="metrics">'+screens.kas.metrics.map(([name,s])=>'<div class="metric"><span>'+icon(s)+' '+name+'</span><b>—</b></div>').join('')+'</div>';
