@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0e1728">
+<meta name="theme-color" content="#FAFAFC">
 <meta name="description" content="TMfiber — billing dan operasional WiFi dalam satu aplikasi.">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
@@ -18,28 +18,29 @@
 </head>
 <body>
 <a class="skip" href="#mainContent">Langsung ke konten</a>
-<div class="shell">
+<div class="shell portfolio-shell">
   <div id="offlineNotice" class="connection-toast" role="status" aria-live="polite" hidden>Perangkat offline. Data pelanggan dan transaksi tidak tersedia.</div>
   <aside class="sidebar" aria-label="Navigasi desktop">
     <a class="brand" href="#beranda"><span class="brand-mark">T<span>.</span></span><span><b>TMfiber</b><small>Billing & Network</small></span></a>
-    <div class="work-label">RUANG KERJA</div>
+    <div class="work-label">MENU APLIKASI</div>
     <nav id="sideNav" aria-label="Menu utama"></nav>
     <div class="sidebar-footer"><span class="status-dot"></span><div><b>Mode aman</b><small>Data pribadi tidak dipublikasi</small></div></div>
   </aside>
   <div class="stage">
     <header class="topbar">
-      <div class="topbrand"><span class="mini-logo">T<span>.</span></span><div><strong>TMfiber</strong><small>Internet Billing</small></div></div>
+      <div class="mobile-brand" aria-hidden="true"><span>T<span class="accent-dot">.</span></span> TMfiber</div>
+      <div class="topbrand"><span class="mini-logo">T<span>.</span></span><div><strong>TMfiber</strong><small>Billing & Internet</small></div></div>
       <div class="topright"><span class="connection-label">Belum terhubung</span><button type="button" id="accountButton" class="account" aria-label="Akses akun" title="Akses akun">TF</button></div>
     </header>
     <main id="mainContent">
-      <div class="hero">
+      <div class="hero"><div class="hero-decoration" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="hero-inner">
-          <div class="hero-heading"><div><div id="pageEyebrow" class="eyebrow">BERANDA</div><h1 id="pageTitle">Ringkasan WiFi</h1><p id="pageDesc">Kelola tagihan dan operasional dengan mudah.</p></div><div class="hero-date" id="today"></div></div>
+          <div class="hero-heading"><div><div id="pageEyebrow" class="eyebrow">WORKSPACE · TMFIBER</div><h1 id="pageTitle">Kelola WiFi dengan mudah.</h1><p id="pageDesc">Pelanggan, tagihan, dan pembayaran dalam satu tempat.</p></div><div class="hero-date" id="today"></div></div>
           <div id="summary" class="summary" aria-label="Ringkasan pendapatan"></div>
         </div>
       </div>
       <div class="content">
-        <div class="notice" role="status"><span class="notice-mark" aria-hidden="true">●</span><p><strong>Akses data terkunci.</strong> Masuk sebagai petugas untuk melihat data pelanggan dan tagihan.</p><button type="button" id="openLogin">Masuk <span aria-hidden="true">→</span></button></div>
+        <div class="notice" role="status"><span class="notice-mark" aria-hidden="true">✳</span><p><strong>Akses data terkunci.</strong> Masuk sebagai petugas untuk melihat data pelanggan dan tagihan.</p><button type="button" id="openLogin">Masuk <span aria-hidden="true">→</span></button></div>
         <section id="panel" aria-live="polite"></section>
         <footer>TMfiber Billing <span>•</span> Privasi pelanggan dilindungi</footer>
       </div>

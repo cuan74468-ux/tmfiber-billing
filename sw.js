@@ -1,7 +1,7 @@
 "use strict";
 // Offline cache contains ONLY the static, public application shell.
 // Do not add API responses, customer records, login sessions, user-generated images, or authenticated pages.
-const CACHE="tmfiber-public-shell-v6";
+const CACHE="tmfiber-public-shell-v7";
 const PUBLIC_FILES=["./","./index.html","./styles.css","./src/app.js","./src/core/navigation.js","./src/views/screens.js","./assets/icon.svg","./manifest.webmanifest"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(PUBLIC_FILES)).then(()=>self.skipWaiting()));

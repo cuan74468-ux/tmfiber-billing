@@ -23,7 +23,9 @@ assert.ok(!/fetch\s*\(/.test(allJs),'No API requests until backend auth validate
 assert.ok(!/google\.com\/spreadsheets\/d\//.test(allJs+html),'Private database cannot be embedded');
 assert.ok(!/TM_HASH_PEPPER|TM_DB_ID|FONNTE_TOKEN|MIKROTIK_PASSWORD/.test(js+html),'No privileged config');
 assert.match(css,/\.mobile-nav/);
-assert.match(css,/#0b1322/);
+assert.match(css,/#FAFAFC/);
+assert.match(css,/#FFD25E/);
+assert.match(css,/\.hero/);
 assert.match(css,/\.sidebar/);
 assert.match(css,/\.mobile-nav/);
 assert.ok(!html.includes('ngulik-inspired.css')&&!html.includes('sunlime-mobile.css'));

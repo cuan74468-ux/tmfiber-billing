@@ -10,17 +10,17 @@ function navItem(r){
   a.innerHTML=icon(r.symbol)+'<span>'+r.label+'</span>';return a;
 }
 export function navigate(){
-  ROUTES.filter(r=>!['mikrotik','audit'].includes(r.id)).forEach(r=>q('sideNav').append(navItem(r)));
+  ROUTES.filter(r=>['beranda','tagihan','pelanggan','kas','menu'].includes(r.id)).forEach(r=>q('sideNav').append(navItem(r)));
   ['beranda','tagihan','pelanggan','kas','menu'].forEach(id=>q('mobileNav').append(navItem(ROUTES.find(r=>r.id===id))));
 }
 function noData(title,message){
   return '<div class="empty"><span class="empty-illustration">'+icon('lock')+'</span><h3>'+title+'</h3><p>'+message+'</p></div>';
 }
 function quickAction(name,symbol){
-  return '<button disabled type="button" class="quick-action">'+icon(symbol)+'<span>'+name+'</span></button>';
+  return '<button disabled type="button" class="quick-action"><span class="quick-icon">'+icon(symbol)+'</span><span>'+name+'</span><small>Perlu masuk</small></button>';
 }
 function quickActions(){
-  return '<section class="quick-section"><div class="section-line"><h2>Akses Cepat</h2><small>Perlu login</small></div><div class="quick-grid">'+quickAction('Tagih WA','send')+quickAction('QRIS','wallet')+quickAction('Tambah','plus')+quickAction('Kas','cash')+'</div></section>';
+  return '<section class="quick-section"><div class="section-line"><h2>Pekerjaan sehari-hari</h2><small>Aktif setelah masuk</small></div><div class="quick-grid">'+quickAction('Kirim tagihan','send')+quickAction('Pembayaran','wallet')+quickAction('Pelanggan baru','plus')+quickAction('Catat kas','cash')+'</div></section>';
 }
 function listFilters(){
   return '<div class="filter-tabs" role="group" aria-label="Status tagihan">'+[['belum','Belum bayar'],['lunas','Sudah lunas'],['semua','Semua']].map(([key,title])=>'<button type="button" class="filter'+(currentFilter===key?' selected':'')+'" data-filter="'+key+'" aria-pressed="'+(currentFilter===key)+'">'+title+'</button>').join('')+'</div>';
@@ -66,13 +66,13 @@ export function menuScreen(){
     ['BILLING & KEUANGAN', ['beranda','tagihan','pelanggan','pembayaran','kas']],
     ['INFRASTRUKTUR & SISTEM', ['mikrotik','audit','pengaturan']]
   ];
-  return '<section class="menu-screen"><p class="menu-help">Pilih pekerjaan. Akses petugas diperiksa setelah login.</p>'+groups.map(([title,ids])=>'<div class="menu-group"><h2>'+title+'</h2><div class="menu-grid">'+ids.map(id=>{
+  return '<section class="menu-screen"><p class="menu-help">Pilih menu sesuai pekerjaan Anda. Data usaha tetap terlindungi.</p>'+groups.map(([title,ids])=>'<div class="menu-group"><h2>'+title+'</h2><div class="menu-grid">'+ids.map(id=>{
     const route=ROUTES.find(r=>r.id===id);
     return '<a href="#'+route.id+'" class="menu-tile"><span class="menu-tile-icon">'+icon(route.symbol)+'</span><span><strong>'+route.label+'</strong><small>'+route.desc+'</small></span><span class="menu-chevron" aria-hidden="true">›</span></a>';
   }).join('')+'</div></div>').join('')+'</section>';
 }
 export function heroSummary(id){
- const item=(label,iconName,tone)=>'<div class="stat '+tone+'"><div class="stat-top"><span class="stat-label">'+label+'</span><span class="stat-icon">'+icon(iconName)+'</span></div><span class="stat-value">—</span><span class="stat-caption">Login untuk melihat data</span></div>';
+ const item=(label,iconName,tone)=>'<div class="stat '+tone+'"><div class="stat-top"><span class="stat-label">'+label+'</span><span class="stat-icon">'+icon(iconName)+'</span></div><span class="stat-value">—</span><span class="stat-caption">Belum terhubung</span></div>';
  if(id==='beranda')return '<div class="stats">'+item('Total Pelanggan','users','blue')+item('Belum Bayar','clock','amber')+item('Sudah Lunas','check','teal')+item('Penerimaan Bulan Ini','wallet','violet')+'</div>';
  if(id==='kas')return '<div class="stats">'+item('Pemasukan','wallet','blue')+item('Pengeluaran','cash','amber')+item('Sisa Kas','check','teal')+'</div>';
  if(id==='tagihan')return '<div class="stats">'+item('Total Tagihan','invoice','blue')+item('Belum Bayar','clock','amber')+item('Sudah Lunas','check','teal')+'</div>';

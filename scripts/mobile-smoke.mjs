@@ -23,7 +23,7 @@ try {
     page.on("pageerror",err=>exceptions.push(err.message));
     await page.goto("http://127.0.0.1:8765/",{waitUntil:"networkidle"});
     await page.locator(".stats .stat").first().waitFor();
-    assert.equal(await page.locator("#pageTitle").textContent(),"Dashboard");
+    assert.equal(await page.locator("#pageTitle").textContent(),"Tagihan, rapi. Kerja, ringan.");
     assert.equal(await page.locator(".quick-action").count(),4);
     assert.equal(await page.locator(".quick-action:not([disabled])").count(),0);
     const overflow=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:window.innerWidth}));
