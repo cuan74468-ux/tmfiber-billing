@@ -18,5 +18,18 @@ jobs:
           node --check src/app.js
           node --check src/core/navigation.js
           node --check src/views/screens.js
+          node --check scripts/mobile-smoke.mjs
       - name: Check static app and public repository baseline
         run: node scripts/check-static.mjs
+      - name: Install browser test driver (CI only)
+        run: npm install --no-save playwright@1.56.1
+      - name: Test mobile and desktop layout in headless Chrome
+        run: node scripts/mobile-smoke.mjs
+      - name: Upload public UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmfiber-public-ui-viewport-screenshots
+          path: test-artifacts/*.png
+          if-no-files-found: ignore
+          retention-days: 7
