@@ -1,0 +1,19 @@
+name: Static UI and public-repository safety checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check JavaScript syntax
+        run: node --check src/app.js
+      - name: Check static app and public repository baseline
+        run: node scripts/check-static.mjs

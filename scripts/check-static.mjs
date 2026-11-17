@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {readFileSync, readdirSync} from 'node:fs';
+import {join} from 'node:path';
+const text=path=>readFileSync(path,'utf8');
+const html=text('index.html'), js=text('src/app.js'), css=text('styles.css');
+const manifest=JSON.parse(text('manifest.webmanifest'));
+const required=['index.html','styles.css','src/app.js','manifest.webmanifest','SECURITY.md','docs/API_CONTRACT.md','docs/UAT.md','.gitignore'];
+for(const f of required)assert.ok(text(f).length>0,'Missing file '+f);
+assert.match(html,/Content-Security-Policy/);
+assert.match(html,/id="sideNav"/);
+assert.match(html,/id="mobileNav"/);
+assert.match(html,/id="loginDialog"/);
+assert.match(html,/id="openLogin"/);
+assert.match(html,/disabled/);
+assert.match(js,/ROUTES/);
+for (const route of ['beranda','pelanggan','tagihan','pembayaran','kas','mikrotik','audit','pengaturan'])assert.ok(js.includes("id:'"+route+"'"),'Missing route '+route);
+assert.ok(!js.includes('localStorage')&&!js.includes('sessionStorage'),'No browser token storage until auth design reviewed');
+assert.ok(!/fetch\s*\(/.test(js),'No API requests until backend auth validated');
+assert.ok(!/google\.com\/spreadsheets\/d\//.test(js+html),'Private database cannot be embedded');
+assert.ok(!/TM_HASH_PEPPER|TM_DB_ID|FONNTE_TOKEN|MIKROTIK_PASSWORD/.test(js+html),'No privileged config');
+assert.match(css,/\.mobile-nav/);
+assert.equal(manifest.start_url,'./');
+assert.equal(manifest.scope,'./');
+assert.equal(manifest.display,'standalone');
+for(const file of readdirSync('assets')){if(file.endsWith('.svg'))assert.match(text(join('assets',file)),/<svg /);}
+console.log('STATIC_CHECK_PASS: routes, privacy baseline, CSP, manifest and HTML anchors');
