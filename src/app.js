@@ -27,7 +27,8 @@ const ROUTES=[
   {id:'kas',label:'Kas',symbol:'cash',title:'Kas operasional',desc:'Pemasukan, pengeluaran dan setoran.'},
   {id:'mikrotik',label:'Jaringan',symbol:'signal',title:'Jaringan WiFi',desc:'Pantau layanan PPPoE dengan aman.'},
   {id:'audit',label:'Riwayat',symbol:'audit',title:'Riwayat aktivitas',desc:'Catatan perubahan dan pemeriksaan.'},
-  {id:'pengaturan',label:'Pengaturan',symbol:'settings',title:'Pengaturan',desc:'Kelola akses dan integrasi layanan.'}
+  {id:'pengaturan',label:'Pengaturan',symbol:'settings',title:'Pengaturan',desc:'Kelola akses dan integrasi layanan.'},
+  {id:'menu',label:'Menu',symbol:'settings',title:'Menu layanan',desc:'Semua pekerjaan TMfiber dalam satu tempat.'}
 ];
 const q=id=>document.getElementById(id);
 const screens={
@@ -42,7 +43,7 @@ function navItem(r){
 }
 function navigate(){
   ROUTES.forEach(r=>q('sideNav').append(navItem(r)));
-  ['beranda','tagihan','pelanggan','kas','pengaturan'].forEach(id=>q('mobileNav').append(navItem(ROUTES.find(r=>r.id===id))));
+  ['beranda','tagihan','pelanggan','kas','menu'].forEach(id=>q('mobileNav').append(navItem(ROUTES.find(r=>r.id===id))));
 }
 function noData(title,message){
   return '<div class="empty"><span class="empty-illustration">'+icon('lock')+'</span><h3>'+title+'</h3><p>'+message+'</p></div>';
@@ -92,6 +93,16 @@ function settings(){
   ];
   return '<section class="setting-list">'+entries.map(([name,desc,ic])=>'<div class="setting-item"><span class="setting-icon">'+icon(ic)+'</span><div><h2>'+name+'</h2><p>'+desc+'</p></div><span class="state">Belum aktif</span></div>').join('')+'</section>';
 }
+function menuScreen(){
+  const groups=[
+    ['Operasional', ['beranda','tagihan','pelanggan','pembayaran','kas']],
+    ['Jaringan & administrasi', ['mikrotik','audit','pengaturan']]
+  ];
+  return '<section class="menu-screen">'+groups.map(([title,ids])=>'<div class="menu-group"><h2>'+title+'</h2><div class="menu-grid">'+ids.map(id=>{
+    const route=ROUTES.find(r=>r.id===id);
+    return '<a href="#'+route.id+'" class="menu-tile"><span class="menu-tile-icon">'+icon(route.symbol)+'</span><span><strong>'+route.label+'</strong><small>'+route.desc+'</small></span><span class="menu-chevron" aria-hidden="true">›</span></a>';
+  }).join('')+'</div></div>').join('')+'</section>';
+}
 function heroSummary(id){
   if(id==='beranda'){
     return '<div class="balance"><div class="balance-top"><span>Uang WiFi terkumpul</span><span class="private-label">'+icon('lock')+' Privat</span></div><div class="balance-main">Rp •••••••</div><div class="balance-bottom"><span>Target tagihan periode ini</span><span>—</span></div><div class="progress-track"><span></span></div></div>';
@@ -108,7 +119,7 @@ function render(){
   q('pageDesc').textContent=route.desc;
   q('pageEyebrow').textContent=route.label.toUpperCase();
   q('summary').innerHTML=heroSummary(route.id);
-  q('panel').innerHTML=route.id==='beranda'?home():route.id==='kas'?cash():route.id==='pengaturan'?settings():directory(route.id);
+  q('panel').innerHTML=route.id==='beranda'?home():route.id==='kas'?cash():route.id==='pengaturan'?settings():route.id==='menu'?menuScreen():directory(route.id);
   document.title=route.label+' · TMfiber Billing';
   document.querySelectorAll('[data-route]').forEach(a=>{
     const active=a.dataset.route===route.id;

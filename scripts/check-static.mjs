@@ -22,11 +22,18 @@ assert.ok(!/fetch\s*\(/.test(js),'No API requests until backend auth validated')
 assert.ok(!/google\.com\/spreadsheets\/d\//.test(js+html),'Private database cannot be embedded');
 assert.ok(!/TM_HASH_PEPPER|TM_DB_ID|FONNTE_TOKEN|MIKROTIK_PASSWORD/.test(js+html),'No privileged config');
 assert.match(css,/\.mobile-nav/);
+const ngulikStyle=text('assets/ngulik-inspired.css');
+assert.match(ngulikStyle,/#faf8f3/);
+assert.match(ngulikStyle,/#b65c39/);
+assert.match(html,/ngulik-inspired\.css/);
+assert.match(js,/id:'menu'/);
+assert.match(js,/menuScreen/);
 const sw=text('sw.js');
 assert.match(sw,/const PUBLIC_FILES=/);
 assert.match(sw,/req.method!=="GET"/);
 assert.match(sw,/allowed.has\(path\)/);
 assert.match(sw,/url.search/);
+assert.match(sw,/ngulik-inspired\\.css/);
 assert.ok(!/\/api\//.test(sw),'Service worker must never cache API paths');
 assert.match(js,/serviceWorker\.register/);
 assert.match(html,/id="offlineNotice"/);

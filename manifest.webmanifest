@@ -4,8 +4,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f7fa",
-  "theme_color": "#118eea",
+  "background_color": "#faf8f3",
+  "theme_color": "#faf8f3",
   "description": "Billing dan operasional WiFi TMfiber",
   "icons": [
     {
