@@ -25,3 +25,9 @@ GitHub Actions workflow `.github/workflows/static-check.yml` menjalankan `node -
 2. Buat database STAGING terisolasi dari database utama dan salin data sintetis untuk UAT.
 3. Implementasikan API Auth/RBAC dan browser transport aman; verifikasi teknis GAS.
 4. Integrasikan daftar pelanggan dan tagihan read-only terlebih dahulu; lanjutkan modul mutasi hanya setelah log dan rollback lulus.
+
+## Tambahan PWA aman
+- `sw.js` hanya menangani daftar putih file shell publik dan dokumen statis.
+- API, URL dengan query, file yang tidak dikenal, request non-GET, dan origin lain tidak dicache oleh service worker.
+- Aplikasi menampilkan indikator offline; saat offline tetap tidak menampilkan data/transaksi atau mengizinkan mutasi.
+- Perlu pengujian offline manual pada HTTPS GitHub Pages setelah deployment.

@@ -19,6 +19,14 @@ assert.ok(!/fetch\s*\(/.test(js),'No API requests until backend auth validated')
 assert.ok(!/google\.com\/spreadsheets\/d\//.test(js+html),'Private database cannot be embedded');
 assert.ok(!/TM_HASH_PEPPER|TM_DB_ID|FONNTE_TOKEN|MIKROTIK_PASSWORD/.test(js+html),'No privileged config');
 assert.match(css,/\.mobile-nav/);
+const sw=text('sw.js');
+assert.match(sw,/const PUBLIC_FILES=/);
+assert.match(sw,/req.method!=="GET"/);
+assert.match(sw,/allowed.has\(path\)/);
+assert.match(sw,/url.search/);
+assert.ok(!/\/api\//.test(sw),'Service worker must never cache API paths');
+assert.match(js,/serviceWorker\.register/);
+assert.match(html,/id="offlineNotice"/);
 assert.equal(manifest.start_url,'./');
 assert.equal(manifest.scope,'./');
 assert.equal(manifest.display,'standalone');

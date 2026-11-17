@@ -121,5 +121,13 @@ function init(){
   document.querySelector('.avatar').addEventListener('click',()=>dlg.showModal());
   window.addEventListener('hashchange',render);
   render();
+  const offlineNotice=byId('offlineNotice');
+  const syncConnection=()=>{ offlineNotice.hidden=navigator.onLine; };
+  window.addEventListener('online',syncConnection);
+  window.addEventListener('offline',syncConnection);
+  syncConnection();
+  if('serviceWorker' in navigator && window.isSecureContext){
+    navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
+  }
 }
 document.addEventListener('DOMContentLoaded',init);

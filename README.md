@@ -3,13 +3,13 @@
 Aplikasi administrasi billing RT/RW Net mobile-first, **GitHub Pages (frontend)** + **Google Apps Script (API privat)** + **Google Sheets (database privat)**.
 
 ## Status
-- UI statis dan PWA sudah disiapkan.
+- UI statis dan PWA sudah disiapkan; public-shell dapat dimuat offline melalui service worker setelah kunjungan pertama di HTTPS. **Tidak ada data pelanggan atau transaksi yang disimpan offline.**
 - **Belum terhubung ke API produksi**. Semua tindakan keuangan, SMS/WA, isolir, dan router tidak tersedia sebelum otentikasi API backend dan UAT.
 - Tidak ada data pelanggan, kunci privat, atau ID spreadsheet di repository.
 - Backend `Code.gs V1.2` yang diuji sebelumnya hanya membuktikan self-test dan preflight, bukan kontrak API untuk login.
 
 ## Menjalankan
-GitHub Pages: Settings → Pages → Deploy from a branch → `main` → `/(root)` → Save. Alternatif pengujian lokal: buka `index.html` pada browser (fitur service worker memerlukan HTTPS/localhost).
+GitHub Pages: Settings → Pages → Deploy from a branch → `main` → `/(root)` → Save. Alternatif pengujian lokal: buka `index.html` pada browser (service worker memerlukan HTTPS/localhost). Gunakan HTTPS GitHub Pages untuk menguji cache offline. Jangan menyimpan kredensial atau data pribadi ke Cache Storage.
 
 **Jangan masukkan URL webhook, OTP, token, password, akun atau informasi pelanggan di file frontend.** Endpoint API harus tersedia dengan kontrol autentikasi dan origin sesuai desain `docs/API_CONTRACT.md` sebelum pengaktifan.
 
