@@ -33,7 +33,7 @@ assert.match(sw,/const PUBLIC_FILES=/);
 assert.match(sw,/req.method!=="GET"/);
 assert.match(sw,/allowed.has\(path\)/);
 assert.match(sw,/url.search/);
-assert.match(sw,/ngulik-inspired\\.css/);
+assert.ok(sw.includes('ngulik-inspired.css'), 'Service worker must cache public theme');
 assert.ok(!/\/api\//.test(sw),'Service worker must never cache API paths');
 assert.match(js,/serviceWorker\.register/);
 assert.match(html,/id="offlineNotice"/);
