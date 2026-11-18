@@ -39,7 +39,7 @@ const ctx={
  LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock:()=>{}})}
 };
 vm.createContext(ctx);vm.runInContext(code,ctx,{filename:'Code.gs+Payments.gs'});
-const owner={role:'OWNER',phone:'6281111111111'};
+const owner={role:'OWNER',phone:'6200000000000'};
 const pay=(key,partial,amount)=>ctx.tmRecordPayment_(owner,{id_tagihan:'INV-TEST0001',idempotency_key:key,metode_bayar:'TUNAI',nominal:amount},partial);
 const fails=(fn,code)=>{try{fn();assert.fail('Expected error '+code);}catch(e){if(e.tmCode!==code)throw e;}};
 fails(()=>pay('synthetic-key-0001',true,50000),403);

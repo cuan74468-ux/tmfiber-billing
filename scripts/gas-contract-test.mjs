@@ -14,7 +14,7 @@ const props=new Map([
  ['TM_FONNTE_TOKEN','mock-provider-token-not-real']
 ]);
 const cache=new Map();
-const fakePhone='6281111111111'; // synthetic unrouteable fixture; no real network calls.
+const fakePhone='6200000000000'; // synthetic unrouteable fixture; no real network calls.
 const sheets={
  Pelanggan:[['ID_Pelanggan','ODP','Nama','Label','No_WA','Alamat','Paket','Tarif','Kode_Unik','Jatuh_Tempo','User_PPPoE','Status'],
  ['SIM-C001','','TEST ONLY','','','','20 Mbps',150000,'','10','','AKTIF']],
