@@ -42,6 +42,7 @@ function init(){
  const open=()=>{
   q('phoneStep').hidden=!!currentUser;
   q('otpStep').hidden=true;
+  otp.disabled=true;verify.disabled=true;
   q('logoutButton').hidden=!currentUser;
   message.textContent=currentUser?'Anda masuk sebagai '+currentUser.role+'.':enabled?'Masukkan nomor petugas STAGING.':'Login belum aktif. Backend belum dideploy.';
   dialog.showModal();
@@ -54,11 +55,11 @@ function init(){
   send.disabled=true;message.textContent='Meminta kode OTP...';
   try{
    await tmPost('request_otp',{no_wa:'62'+phone.value.replace(/\D/g,'').replace(/^0+/,'')});
-   q('otpStep').hidden=false;q('phoneStep').hidden=true;message.textContent='Jika akun terdaftar, kode dikirim ke WhatsApp.';otp.focus();
+   q('otpStep').hidden=false;q('phoneStep').hidden=true;otp.disabled=false;verify.disabled=false;message.textContent='Jika akun terdaftar, kode dikirim ke WhatsApp.';otp.focus();
   }catch(e){message.textContent=e.message;}
   finally{send.disabled=!enabled;}
  });
- q('otpBack').addEventListener('click',()=>{q('otpStep').hidden=true;q('phoneStep').hidden=false;});
+ q('otpBack').addEventListener('click',()=>{q('otpStep').hidden=true;q('phoneStep').hidden=false;otp.disabled=true;verify.disabled=true;});
  verify.addEventListener('click',async()=>{
   verify.disabled=true;message.textContent='Memverifikasi kode...';
   try{
