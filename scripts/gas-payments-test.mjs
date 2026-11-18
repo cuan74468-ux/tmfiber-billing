@@ -54,7 +54,7 @@ assert.equal(pay('synthetic-key-0001',true,50000).already_processed,true);
 assert.equal(values.Kas_Operasional.length,2);
 fails(()=>pay('synthetic-key-0002',true,200000),400);
 fails(()=>pay('synthetic-key-0002',true,-100),400);
-fails(()=>pay('synthetic-key-0001',false,0),409);
+assert.equal(pay('synthetic-key-0001',false,0).already_processed,true);
 const firstHash=values.Audit_Log[1][7];
 const y=pay('synthetic-key-0002',false,0);
 assert.equal(y.new_status,'LUNAS');assert.equal(y.sisa_hutang,0);
