@@ -41,6 +41,8 @@ function tmRecordPayment_(user,p,partial){
   var requestHash=tmSha_(invoiceId+'|'+actionName+'|'+method+'|'+(partial?String(Number(p.nominal)):'FULL'));
   var ledgerRows=ledger.getDataRange().getValues();
   for(var i=1;i<ledgerRows.length;i++){
+    // A prior interrupted write for this invoice must block all NEW keys until manual reconciliation.
+    if(String(ledgerRows[i][lc.ID_Tagihan])===invoiceId && String(ledgerRows[i][lc.Status])==='PENDING')throw tmErr_(409,'Tagihan tertahan: rekonsiliasi transaksi sebelumnya diperlukan.');
     if(String(ledgerRows[i][lc.Idempotency_Key])===key){
       if(String(ledgerRows[i][lc.ID_Tagihan])!==invoiceId || String(ledgerRows[i][lc.Request_Hash])!==requestHash)throw tmErr_(409,'Kunci transaksi dipakai untuk permintaan berbeda.');
       if(String(ledgerRows[i][lc.Status])==='COMMITTED')return{id_tagihan:invoiceId,idempotency_key:key,already_processed:true};
