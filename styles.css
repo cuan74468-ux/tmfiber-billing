@@ -20,3 +20,16 @@ dialog{border:1px solid var(--line);padding:0;border-radius:20px;background:#fff
 }
 @media(max-width:375px){.content{padding-inline:12px}.topbar{padding-inline:12px}.connection-label{font-size:0;padding:8px}.status-dot{width:8px;height:8px}.notice{display:grid;grid-template-columns:24px 1fr}.notice p{grid-column:2}.notice button{grid-column:2;justify-self:start}.filter{padding-inline:8px}.quick-action{font-size:9px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Read-only STAGING integration: no additional theme, only secure auth and table states. */
+[hidden]{display:none!important}
+.auth-message{font-size:11px;color:#6A8072;line-height:1.55;margin:13px 0 0;text-align:center;overflow-wrap:anywhere}
+.secondary-button{display:block;width:100%;border:1px solid #DCE7DF;background:#F5F9F6;color:#174F43;min-height:44px;border-radius:11px;margin-top:10px;font-weight:700}
+.read-list{display:grid;border-top:1px solid #E8EBEF;margin:12px -22px -8px}
+.read-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid #E8EBEF;min-width:0}
+.read-row:last-child{border:0}
+.read-row>div{min-width:0;flex:1}
+.read-row strong{display:block;color:#17212F;font-size:12px;font-weight:750;overflow-wrap:anywhere}
+.read-row small{display:block;color:#8995A2;font-size:10px;margin-top:4px;overflow-wrap:anywhere}
+.read-meta{text-align:right}
+@media(max-width:760px){.read-list{margin-inline:-17px}.read-row{padding:13px 17px}}

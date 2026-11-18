@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F8F9FB">
 <meta name="description" content="TMfiber — pelanggan, tagihan dan pembayaran WiFi dalam satu tempat.">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>TMfiber · Everyday Billing</title>
 <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="./manifest.webmanifest">
@@ -48,8 +48,8 @@
  <div class="dialog-body">
   <p class="eyebrow">AKSES PETUGAS</p>
   <h2 id="loginTitle">Masuk ke TMfiber</h2>
-  <p>Masuk menggunakan WhatsApp terdaftar setelah autentikasi backend selesai diuji.</p>
-  <form method="dialog"><label for="phone">Nomor WhatsApp</label><div class="phone-field"><span>+62</span><input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="812xxxxxxxx" disabled></div><button class="solid-button" type="button" disabled>Kirim kode OTP</button><small>Login belum diaktifkan. Nomor dan OTP tidak dikirim atau disimpan.</small></form>
+  <p id="loginDescription">Koneksi STAGING belum diaktifkan. Login nyata tetap terkunci.</p>
+  <form id="authForm" method="dialog"><div id="phoneStep"><label for="phone">Nomor WhatsApp</label><div class="phone-field"><span>+62</span><input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="812xxxxxxxx" disabled></div><button id="otpSend" class="solid-button" type="button" disabled>Kirim kode OTP</button></div><div id="otpStep" hidden><label for="otp">Kode OTP 6 digit</label><div class="phone-field"><input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••"></div><button id="otpVerify" class="solid-button" type="button">Verifikasi OTP</button><button id="otpBack" class="secondary-button" type="button">Ganti nomor</button></div><button id="logoutButton" class="secondary-button" type="button" hidden>Keluar dari akun</button><p id="authMessage" class="auth-message" role="status" aria-live="polite">Login belum diaktifkan. Tidak ada nomor atau kode OTP yang diproses.</p></form>
  </div>
 </dialog>
 </body>
