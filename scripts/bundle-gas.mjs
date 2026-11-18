@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const source=['gas/Code.gs','gas/Payments.gs'].map(x=>readFileSync(x,'utf8')).join('\n\n');
+assert.match(source,/function doPost\(/);
+assert.match(source,/function tmRecordPayment_\(/);
+assert.match(source,/TM_ENVIRONMENT/);
+assert.ok(!source.includes('FAKE_STAGING_ID_ONLY'));
+mkdirSync('dist',{recursive:true});
+writeFileSync('dist/Code.gs','/** TMfiber STAGING deployment bundle — never paste secrets into this file. */\n'+source+'\n');
+console.log('GAS_BUNDLE_READY: dist/Code.gs');

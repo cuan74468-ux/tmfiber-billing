@@ -29,6 +29,17 @@ jobs:
         run: npm install --no-save playwright@1.56.1
       - name: Test mobile and desktop layout in headless Chrome
         run: node scripts/mobile-smoke.mjs
+      - name: Build single-file GAS STAGING installation bundle
+        if: always()
+        run: node scripts/bundle-gas.mjs
+      - name: Upload GAS STAGING source package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmfiber-staging-gas-source
+          path: dist/Code.gs
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Upload public UI screenshots
         if: always()
         uses: actions/upload-artifact@v4
