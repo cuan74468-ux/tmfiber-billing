@@ -27,6 +27,8 @@ function doPost(e){
    else if(req.action==='get_customers')result=tmCustomers_(user,body);
    else if(req.action==='get_invoices')result=tmInvoices_(user,body);
    else if(req.action==='get_cashbook')result=tmCash_(user,body);
+   else if(req.action==='mark_as_paid')result=tmRecordPayment_(user,body,false);
+   else if(req.action==='record_installment')result=tmRecordPayment_(user,body,true);
    else throw tmErr_(404,'Fungsi belum tersedia.');
   }
   return tmOutput_({status:'SUCCESS',code:200,message:'Berhasil.',data:result});
