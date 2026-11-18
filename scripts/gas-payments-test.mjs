@@ -7,7 +7,7 @@ const headers={
  Tagihan:['ID_Tagihan','Periode','ID_Pelanggan','Label','Nominal','Total_Tagihan','Tgl_Jatuh_Tempo','Status_Bayar','Metode_Bayar','Diterima_Oleh','Waktu_Bayar','Status_Setoran','jumlah_terbayar','sisa_hutang','komisi_biller','last_mutation_key','last_mutation_at'],
  Kas_Operasional:['ID_Transaksi','Tanggal','Jenis_Transaksi','Kategori','Keterangan','Nominal','Dicatat_Oleh','ID_Tagihan','Idempotency_Key'],
  Audit_Log:['Timestamp','User','Role','Aksi','Target','Detail','prev_hash','row_hash'],
- Pembayaran_Ledger:['ID_Ledger','Timestamp','ID_Tagihan','Nominal','Metode','Petugas','Idempotency_Key','Status','Error_Kode','Catatan']
+ Pembayaran_Ledger:['ID_Ledger','Timestamp','ID_Tagihan','Nominal','Metode','Petugas','Idempotency_Key','Status','Error_Kode','Catatan','Action','Request_Hash']
 };
 const values={};
 for(const [name,row] of Object.entries(headers))values[name]=[[...row]];
@@ -54,7 +54,7 @@ assert.equal(pay('synthetic-key-0001',true,50000).already_processed,true);
 assert.equal(values.Kas_Operasional.length,2);
 fails(()=>pay('synthetic-key-0002',true,200000),400);
 fails(()=>pay('synthetic-key-0002',true,-100),400);
-assert.equal(pay('synthetic-key-0001',false,0).already_processed,true);
+fails(()=>pay('synthetic-key-0001',false,0),409);
 const firstHash=values.Audit_Log[1][7];
 const y=pay('synthetic-key-0002',false,0);
 assert.equal(y.new_status,'LUNAS');assert.equal(y.sisa_hutang,0);

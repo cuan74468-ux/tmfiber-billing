@@ -33,14 +33,16 @@ function tmRecordPayment_(user,p,partial){
  if(!lock.tryLock(25000))throw tmErr_(429,'Transaksi sedang diproses. Coba lagi.');
  try{
   var ledger=tmSheet_('Pembayaran_Ledger'),invoice=tmSheet_('Tagihan'),cash=tmSheet_('Kas_Operasional'),audit=tmSheet_('Audit_Log');
-  var lc=tmColumns_(ledger,['ID_Ledger','ID_Tagihan','Idempotency_Key','Status']),
+  var lc=tmColumns_(ledger,['ID_Ledger','ID_Tagihan','Idempotency_Key','Status','Action','Request_Hash']),
       ic=tmColumns_(invoice,['ID_Tagihan','Total_Tagihan','Status_Bayar','jumlah_terbayar','sisa_hutang','komisi_biller','last_mutation_key','last_mutation_at']),
       cc=tmColumns_(cash,['ID_Transaksi','ID_Tagihan','Idempotency_Key']),
       ac=tmColumns_(audit,['prev_hash','row_hash']);
+  var actionName=partial?'CICIL':'LUNAS';
+  var requestHash=tmSha_(invoiceId+'|'+actionName+'|'+method+'|'+(partial?String(Number(p.nominal)):'FULL'));
   var ledgerRows=ledger.getDataRange().getValues();
   for(var i=1;i<ledgerRows.length;i++){
     if(String(ledgerRows[i][lc.Idempotency_Key])===key){
-      if(String(ledgerRows[i][lc.ID_Tagihan])!==invoiceId)throw tmErr_(409,'Kunci transaksi sudah digunakan.');
+      if(String(ledgerRows[i][lc.ID_Tagihan])!==invoiceId || String(ledgerRows[i][lc.Request_Hash])!==requestHash)throw tmErr_(409,'Kunci transaksi dipakai untuk permintaan berbeda.');
       if(String(ledgerRows[i][lc.Status])==='COMMITTED')return{id_tagihan:invoiceId,idempotency_key:key,already_processed:true};
       throw tmErr_(409,'Transaksi tertahan untuk rekonsiliasi manual.');
     }
@@ -69,7 +71,7 @@ function tmRecordPayment_(user,p,partial){
   var now=Utilities.formatDate(new Date(),'Asia/Jakarta','yyyy-MM-dd HH:mm:ss');
   var ledgerId='LGR-'+Utilities.getUuid().replace(/-/g,'');
   var ledgerRow=ledger.getLastRow()+1;
-  ledger.appendRow([ledgerId,now,invoiceId,amount,method,user.phone,key,'PENDING','','']);
+  ledger.appendRow([ledgerId,now,invoiceId,amount,method,user.phone,key,'PENDING','','',actionName,requestHash]);
   // These calls are not atomic across Sheets. PENDING intentionally survives any partial failure.
   invoice.getRange(rowIndex,ic.jumlah_terbayar+1,1,5).setValues([[nextPaid,nextRemain,commission,key,now]]);
   invoice.getRange(rowIndex,ic.Status_Bayar+1).setValue(newStatus);

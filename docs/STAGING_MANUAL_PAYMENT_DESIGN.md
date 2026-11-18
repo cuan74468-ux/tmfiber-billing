@@ -12,3 +12,5 @@ Under LockService, each payment is staged as PENDING before the invoice, cash an
 Only OWNER may submit, and only explicit manual TUNAI, TRANSFER, QRIS_STATIC_MANUAL methods. All payment providers and router commands remain off. Collector commission is deliberately 0 until scoped biller assignments and settings are designed and tested.
 
 Ledger reversal, failed-partial recovery and reliable audit chain trust anchoring must be tested before production. The work is preparation and staging source, NOT production-ready financial processing.
+
+Ledger K-L holds Action and Request_Hash. Reusing an idempotency key with different action/method/amount/invoice returns 409; identical committed requests return already_processed.
