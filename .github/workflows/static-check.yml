@@ -23,6 +23,8 @@ jobs:
         run: node scripts/security-scan.mjs
       - name: Validate isolated GAS STAGING contract
         run: node scripts/gas-contract-test.mjs
+      - name: Validate customer and invoice creation (synthetic STAGING)
+        run: node scripts/gas-crud-test.mjs
       - name: Validate manual-payment ledger (synthetic STAGING)
         run: node scripts/gas-payments-test.mjs
       - name: Check static app and public repository baseline
