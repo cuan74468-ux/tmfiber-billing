@@ -1,6 +1,6 @@
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import assert from 'node:assert/strict';
-const source=['gas/Code.gs','gas/Payments.gs'].map(x=>readFileSync(x,'utf8')).join('\n\n');
+const source=['gas/Code.gs','gas/Payments.gs','gas/Customers.gs'].map(x=>readFileSync(x,'utf8')).join('\n\n');
 assert.match(source,/function doPost\(/);
 assert.match(source,/function tmRecordPayment_\(/);
 assert.match(source,/TM_ENVIRONMENT/);

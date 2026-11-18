@@ -1,6 +1,8 @@
 # TMfiber GAS — STAGING Package (not deployed)
 
-Files: Code.gs (single POST action dispatcher + OTP HMAC session + Owner read APIs) and Payments.gs (manual payment / installment handler). Both are combined into one Code.gs automatically by scripts/bundle-gas.mjs in GitHub Actions.
+Files: Code.gs (POST action dispatcher + OTP HMAC and Owner read APIs), Payments.gs (manual payments), and Customers.gs (customer/invoice creation). All three are combined into one Code.gs automatically by scripts/bundle-gas.mjs in GitHub Actions.
+
+CRUD writes are STAGING-only and require TM_MUTATIONS_ENABLED=true. Operations_Ledger is mandatory, PENDING entries block further writes until manual reconciliation. No production customer creation or invoice generation has been tested end-to-end.
 
 ## STAGING ScriptProperties (configure manually in a separate GAS project)
 TM_ENVIRONMENT=STAGING
