@@ -3,59 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#FAFAFC">
-<meta name="description" content="TMfiber — billing dan operasional WiFi dalam satu aplikasi.">
+<meta name="theme-color" content="#F8F9FB">
+<meta name="description" content="TMfiber — pelanggan, tagihan dan pembayaran WiFi dalam satu tempat.">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>TMfiber · Billing WiFi</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>TMfiber · Everyday Billing</title>
 <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./styles.css">
-
-
-
 <script type="module" src="./src/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#mainContent">Langsung ke konten</a>
-<div class="shell portfolio-shell">
-  <div id="offlineNotice" class="connection-toast" role="status" aria-live="polite" hidden>Perangkat offline. Data pelanggan dan transaksi tidak tersedia.</div>
-  <aside class="sidebar" aria-label="Navigasi desktop">
-    <a class="brand" href="#beranda"><span class="brand-mark">T<span>.</span></span><span><b>TMfiber</b><small>Billing & Network</small></span></a>
-    <div class="work-label">MENU APLIKASI</div>
-    <nav id="sideNav" aria-label="Menu utama"></nav>
-    <div class="sidebar-footer"><span class="status-dot"></span><div><b>Mode aman</b><small>Data pribadi tidak dipublikasi</small></div></div>
-  </aside>
-  <div class="stage">
-    <header class="topbar">
-      <div class="mobile-brand" aria-hidden="true"><span>T<span class="accent-dot">.</span></span> TMfiber</div>
-      <div class="topbrand"><span class="mini-logo">T<span>.</span></span><div><strong>TMfiber</strong><small>Billing & Internet</small></div></div>
-      <div class="topright"><span class="connection-label">Belum terhubung</span><button type="button" id="accountButton" class="account" aria-label="Akses akun" title="Akses akun">TF</button></div>
-    </header>
-    <main id="mainContent">
-      <div class="hero"><div class="hero-decoration" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="hero-inner">
-          <div class="hero-heading"><div><div id="pageEyebrow" class="eyebrow">WORKSPACE · TMFIBER</div><h1 id="pageTitle">Kelola WiFi dengan mudah.</h1><p id="pageDesc">Pelanggan, tagihan, dan pembayaran dalam satu tempat.</p></div><div class="hero-date" id="today"></div></div>
-          <div id="summary" class="summary" aria-label="Ringkasan pendapatan"></div>
-        </div>
-      </div>
-      <div class="content">
-        <div class="notice" role="status"><span class="notice-mark" aria-hidden="true">✳</span><p><strong>Akses data terkunci.</strong> Masuk sebagai petugas untuk melihat data pelanggan dan tagihan.</p><button type="button" id="openLogin">Masuk <span aria-hidden="true">→</span></button></div>
-        <section id="panel" aria-live="polite"></section>
-        <footer>TMfiber Billing <span>•</span> Privasi pelanggan dilindungi</footer>
-      </div>
-    </main>
-  </div>
-  <nav id="mobileNav" class="mobile-nav" aria-label="Navigasi bawah"></nav>
+<div class="shell">
+ <div id="offlineNotice" class="connection-toast" role="status" aria-live="polite" hidden>Perangkat sedang offline. Data usaha tidak tersedia.</div>
+ <aside class="sidebar" aria-label="Navigasi desktop">
+  <a class="brand" href="#beranda"><span class="brand-mark" aria-hidden="true">T<span>.</span></span><span><strong>TMfiber</strong><small>Everyday Billing</small></span></a>
+  <div class="work-label">MENU UTAMA</div>
+  <nav id="sideNav" aria-label="Menu utama"></nav>
+  <div class="sidebar-bottom"><span class="shield-mark" aria-hidden="true">●</span><div><b>Data terlindungi</b><small>Masuk untuk membuka akun</small></div></div>
+ </aside>
+ <div class="stage">
+  <header class="topbar">
+   <a class="mobile-brand" href="#beranda"><span class="mobile-mark" aria-hidden="true">T<span>.</span></span><span><strong>TMfiber</strong><small>Billing & Internet</small></span></a>
+   <div class="top-actions"><span class="connection-label"><span class="status-dot"></span> Belum masuk</span><button type="button" id="accountButton" class="account" aria-label="Masuk akun">TF</button></div>
+  </header>
+  <main id="mainContent">
+   <div class="content">
+    <section class="page-heading">
+     <div><p class="eyebrow" id="pageEyebrow">RINGKASAN USAHA</p><h1 id="pageTitle">Beranda</h1><p id="pageDesc">Tagihan dan pelanggan WiFi dalam satu tempat.</p></div>
+     <span id="today" class="today"></span>
+    </section>
+    <div class="notice" role="status"><span class="notice-icon" aria-hidden="true">i</span><p><strong>Data usaha belum ditampilkan.</strong> Masuk untuk melihat pelanggan, tagihan, dan pembayaran. Fitur transaksi tetap terkunci.</p><button id="openLogin" type="button">Masuk <span aria-hidden="true">→</span></button></div>
+    <section id="summary" class="summary" aria-label="Ringkasan data"></section>
+    <section id="panel" aria-live="polite"></section>
+    <footer class="footer">TMfiber · Data pelanggan dan transaksi tetap privat</footer>
+   </div>
+  </main>
+ </div>
+ <nav id="mobileNav" class="mobile-nav" aria-label="Navigasi bawah"></nav>
 </div>
 <dialog id="loginDialog" aria-labelledby="loginTitle">
-  <div class="login-head"><span class="login-logo">T<span>.</span></span><button id="closeLogin" type="button" class="dialog-close" aria-label="Tutup dialog">×</button></div>
-  <div class="login-body">
-    <span class="eyebrow">AKSES PETUGAS</span><h2 id="loginTitle">Masuk ke TMfiber</h2><p>Gunakan nomor WhatsApp terdaftar setelah verifikasi login backend selesai.</p>
-    <form method="dialog"><label for="phone">Nomor WhatsApp</label><div class="number-field"><span>+62</span><input id="phone" type="tel" placeholder="812xxxxxxxx" autocomplete="tel" inputmode="numeric" disabled></div><button class="action-primary" disabled type="button">Kirim kode OTP</button><small>Login belum diaktifkan. Tidak ada nomor atau OTP yang diproses.</small></form>
-  </div>
+ <header class="dialog-header"><span class="dialog-logo">T<span>.</span></span><button id="closeLogin" class="dialog-close" type="button" aria-label="Tutup login">×</button></header>
+ <div class="dialog-body">
+  <p class="eyebrow">AKSES PETUGAS</p>
+  <h2 id="loginTitle">Masuk ke TMfiber</h2>
+  <p>Masuk menggunakan WhatsApp terdaftar setelah autentikasi backend selesai diuji.</p>
+  <form method="dialog"><label for="phone">Nomor WhatsApp</label><div class="phone-field"><span>+62</span><input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="812xxxxxxxx" disabled></div><button class="solid-button" type="button" disabled>Kirim kode OTP</button><small>Login belum diaktifkan. Nomor dan OTP tidak dikirim atau disimpan.</small></form>
+ </div>
 </dialog>
-</body></html>
+</body>
+</html>

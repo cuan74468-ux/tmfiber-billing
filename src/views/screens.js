@@ -1,81 +1,103 @@
-import {q,icon,ROUTES} from "../core/navigation.js";
-const screens={
-  beranda:{metrics:[['Tagihan belum bayar','invoice'],['Sudah lunas','check'],['Pelanggan aktif','users']]},
-  kas:{metrics:[['Pemasukan','wallet'],['Pengeluaran','cash'],['Saldo bersih','check']]},
-  lainnya:{metrics:[]}
-};
-let currentFilter='belum';
-function navItem(r){
-  const a=document.createElement('a');a.href='#'+r.id;a.dataset.route=r.id;
-  a.innerHTML=icon(r.symbol)+'<span>'+r.label+'</span>';return a;
-}
+import {icon,ROUTES,q} from '../core/navigation.js';
+let filterValue='belum';
+const MAIN=['beranda','tagihan','pelanggan','kas','menu'];
+function navItem(r){const a=document.createElement('a');a.href='#'+r.id;a.dataset.route=r.id;a.innerHTML=icon(r.symbol)+'<span>'+r.label+'</span>';return a;}
 export function navigate(){
-  ROUTES.filter(r=>['beranda','tagihan','pelanggan','kas','menu'].includes(r.id)).forEach(r=>q('sideNav').append(navItem(r)));
-  ['beranda','tagihan','pelanggan','kas','menu'].forEach(id=>q('mobileNav').append(navItem(ROUTES.find(r=>r.id===id))));
+ for(const id of MAIN){q('mobileNav').append(navItem(ROUTES.find(r=>r.id===id)));q('sideNav').append(navItem(ROUTES.find(r=>r.id===id)));}
 }
-function noData(title,message){
-  return '<div class="empty"><span class="empty-illustration">'+icon('lock')+'</span><h3>'+title+'</h3><p>'+message+'</p></div>';
-}
-function quickAction(name,symbol){
-  return '<button disabled type="button" class="quick-action"><span class="quick-icon">'+icon(symbol)+'</span><span>'+name+'</span><small>Perlu masuk</small></button>';
-}
-function quickActions(){
-  return '<section class="quick-section"><div class="section-line"><h2>Pekerjaan sehari-hari</h2><small>Aktif setelah masuk</small></div><div class="quick-grid">'+quickAction('Kirim tagihan','send')+quickAction('Pembayaran','wallet')+quickAction('Pelanggan baru','plus')+quickAction('Catat kas','cash')+'</div></section>';
-}
-function listFilters(){
-  return '<div class="filter-tabs" role="group" aria-label="Status tagihan">'+[['belum','Belum bayar'],['lunas','Sudah lunas'],['semua','Semua']].map(([key,title])=>'<button type="button" class="filter'+(currentFilter===key?' selected':'')+'" data-filter="'+key+'" aria-pressed="'+(currentFilter===key)+'">'+title+'</button>').join('')+'</div>';
-}
-function searchField(label){
-  return '<label class="search-box">'+icon('search')+'<span class="sr-only">'+label+'</span><input type="search" placeholder="'+label+'" disabled></label>';
-}
-function panel(title,subtitle,body,action=''){
-  return '<section class="sheet"><header class="sheet-head"><div><h2>'+title+'</h2><p>'+subtitle+'</p></div>'+action+'</header>'+body+'</section>';
-}
-function buttonDisabled(text){
-  return '<button type="button" class="small-primary" disabled>'+icon('plus')+' '+text+'</button>';
-}
-export function home(){
-  return quickActions()+'<section class="bill-section"><div class="section-line"><h2>Tagihan pelanggan</h2><span class="tiny-lock">'+icon('shield')+' Privat</span></div>'+listFilters()+searchField('Cari nama atau nomor pelanggan')+noData('Tagihan belum ditampilkan','Masuk sebagai petugas terdaftar untuk melihat pelanggan dan status pembayaran.')+'</section>';
-}
-export function directory(kind){
-  const map={
-    pelanggan:['Daftar pelanggan','Kelola pelanggan, paket, dan jatuh tempo','Cari nama atau ID pelanggan','Tambah pelanggan'],
-    tagihan:['Daftar tagihan','Filter status dan periode pembayaran','Cari nomor tagihan','Terbitkan tagihan'],
-    pembayaran:['Rekonsiliasi pembayaran','Validasi mutasi sebelum menandai lunas','Cari referensi pembayaran','Verifikasi pembayaran'],
-    mikrotik:['Pemeriksaan sambungan','Data sambungan untuk petugas teknis','Cari pelanggan','Periksa jaringan'],
-    audit:['Jejak aktivitas','Tindakan yang tercatat pada sistem','Cari aktivitas','Ekspor riwayat']
-  }[kind];
-  return panel(map[0],map[1],'<div class="list-tools">'+searchField(map[2])+buttonDisabled(map[3])+'</div>'+noData('Perlu login petugas','Data hanya tampil setelah backend memvalidasi sesi dan hak akses.'));
-}
-export function cash(){
-  return panel('Riwayat kas','Pemasukan dan pengeluaran tercatat terpisah','<div class="list-tools">'+searchField('Cari transaksi')+buttonDisabled('Catat transaksi')+'</div>'+noData('Belum ada transaksi yang ditampilkan','Kas dan setoran kolektor membutuhkan akun yang terverifikasi.'));
-}
-export function settings(){
-  const entries=[
-    ['Profil usaha','Nama usaha, paket, dan jatuh tempo','settings'],
-    ['Akun petugas','Owner, Kolektor, dan Teknisi','users'],
-    ['WhatsApp','OTP serta pengingat tagihan','send'],
-    ['Pembayaran QRIS','Konfirmasi manual dan rekonsiliasi','wallet'],
-    ['Alat teknisi','Pemeriksaan sambungan jaringan','signal'],
-    ['Riwayat sistem','Catatan perubahan untuk pemilik','shield']
-  ];
-  return '<section class="setting-list">'+entries.map(([name,desc,ic])=>'<div class="setting-item"><span class="setting-icon">'+icon(ic)+'</span><div><h2>'+name+'</h2><p>'+desc+'</p></div><span class="state">Belum aktif</span></div>').join('')+'</section>';
-}
-export function menuScreen(){
-  const groups=[
-    ['BILLING & KEUANGAN', ['beranda','tagihan','pelanggan','pembayaran','kas']],
-    ['INFRASTRUKTUR & SISTEM', ['mikrotik','audit','pengaturan']]
-  ];
-  return '<section class="menu-screen"><p class="menu-help">Pilih menu sesuai pekerjaan Anda. Data usaha tetap terlindungi.</p>'+groups.map(([title,ids])=>'<div class="menu-group"><h2>'+title+'</h2><div class="menu-grid">'+ids.map(id=>{
-    const route=ROUTES.find(r=>r.id===id);
-    return '<a href="#'+route.id+'" class="menu-tile"><span class="menu-tile-icon">'+icon(route.symbol)+'</span><span><strong>'+route.label+'</strong><small>'+route.desc+'</small></span><span class="menu-chevron" aria-hidden="true">›</span></a>';
-  }).join('')+'</div></div>').join('')+'</section>';
+const status=(text,tone='neutral')=>'<span class="pill '+tone+'">'+text+'</span>';
+const locked=(title,description)=>'<div class="empty"><span class="empty-icon">'+icon('lock')+'</span><h3>'+title+'</h3><p>'+description+'</p></div>';
+const search=(label)=>'<label class="search-box">'+icon('search')+'<span class="sr-only">'+label+'</span><input type="search" placeholder="'+label+'" disabled></label>';
+const action=(label,ic='plus')=>'<button class="outline-button" type="button" disabled>'+icon(ic)+'<span>'+label+'</span></button>';
+const header=(title,sub,button='')=>'<header class="section-head"><div><h2>'+title+'</h2><p>'+sub+'</p></div>'+button+'</header>';
+const panel=(title,sub,body,button='')=>'<section class="panel">'+header(title,sub,button)+body+'</section>';
+const filters=()=>{
+ const opts=[['belum','Belum bayar'],['cicil','Cicilan'],['lunas','Lunas'],['semua','Semua']];
+ return '<div class="filter-tabs" role="group" aria-label="Status tagihan">'+opts.map(([v,l])=>'<button class="filter'+(filterValue===v?' selected':'')+'" type="button" data-filter="'+v+'" aria-pressed="'+(filterValue===v)+'">'+l+'</button>').join('')+'</div>';
+};
+const toolbar=(placeholder,button)=>'<div class="toolbar">'+search(placeholder)+(button?action(button):'')+'</div>';
+function kpi(label,kind,ic){
+ return '<div class="kpi '+kind+'"><div class="kpi-top"><span>'+label+'</span><span class="kpi-icon">'+icon(ic)+'</span></div><strong aria-label="Belum tersedia">—</strong><small>Data setelah login</small></div>';
 }
 export function heroSummary(id){
- const item=(label,iconName,tone)=>'<div class="stat '+tone+'"><div class="stat-top"><span class="stat-label">'+label+'</span><span class="stat-icon">'+icon(iconName)+'</span></div><span class="stat-value">—</span><span class="stat-caption">Belum terhubung</span></div>';
- if(id==='beranda')return '<div class="stats">'+item('Total Pelanggan','users','blue')+item('Belum Bayar','clock','amber')+item('Sudah Lunas','check','teal')+item('Penerimaan Bulan Ini','wallet','violet')+'</div>';
- if(id==='kas')return '<div class="stats">'+item('Pemasukan','wallet','blue')+item('Pengeluaran','cash','amber')+item('Sisa Kas','check','teal')+'</div>';
- if(id==='tagihan')return '<div class="stats">'+item('Total Tagihan','invoice','blue')+item('Belum Bayar','clock','amber')+item('Sudah Lunas','check','teal')+'</div>';
- return '<div class="compact-summary">'+icon('shield')+'<div><strong>Akses privat</strong><p>Informasi tersedia untuk petugas setelah login.</p></div></div>';
+ if(id==='beranda')return '<div class="summary-wrap"><div class="featured-balance"><span>Penerimaan bulan ini</span><strong>Rp •••••••</strong><div class="balance-bottom">'+icon('shield')+' <span>Hanya tampil setelah masuk</span></div></div><div class="kpi-grid">'+kpi('Belum bayar','warning','clock')+kpi('Sudah lunas','success','check')+kpi('Pelanggan','blue','users')+kpi('Jatuh tempo','danger','calendar')+'</div></div>';
+ if(id==='tagihan')return '<div class="kpi-grid standalone">'+kpi('Belum bayar','warning','clock')+kpi('Cicilan','blue','coins')+kpi('Sudah lunas','success','check')+kpi('Total tagihan','neutral','invoice')+'</div>';
+ if(id==='kas')return '<div class="kpi-grid standalone">'+kpi('Pemasukan','success','wallet')+kpi('Pengeluaran','warning','cash')+kpi('Setoran','blue','coins')+kpi('Saldo kas','neutral','check')+'</div>';
+ return '';
 }
-export function setFilter(value){if(['belum','lunas','semua'].includes(value))currentFilter=value;}
+function quickLinks(){
+ const items=[['Kirim tagihan','send'],['Catat bayar','wallet'],['Tambah pelanggan','users'],['Catat kas','cash']];
+ return '<section class="quick-section">'+header('Pekerjaan cepat','Tindakan tersedia setelah login')+'<div class="quick-grid">'+items.map(([name,ic])=>'<button class="quick-action" disabled type="button"><span class="quick-icon">'+icon(ic)+'</span><strong>'+name+'</strong></button>').join('')+'</div></section>';
+}
+export function home(){
+ return quickLinks()+panel('Tagihan pelanggan','Pantau pembayaran yang perlu ditindaklanjuti',filters()+toolbar('Cari nama atau nomor pelanggan')+locked('Daftar tagihan terlindungi','Masuk untuk melihat pelanggan, jumlah tagihan, dan tindakan penagihan.'),'<a class="text-link" href="#tagihan">Semua tagihan '+icon('arrow')+'</a>')+
+ '<div class="secondary-row">'+panel('Aktivitas terkini','Penerimaan dan perubahan terbaru',locked('Belum ada aktivitas ditampilkan','Riwayat usaha hanya tersedia setelah login.'))+'</div>';
+}
+function listScreen(type){
+ const data={
+ pelanggan:['Daftar pelanggan','Cari, lihat paket dan status pelanggan','Cari pelanggan','Tambah pelanggan','Belum ada data pelanggan yang dapat dilihat','detail-pelanggan'],
+ tagihan:['Daftar tagihan','Status pembayaran dan jatuh tempo','Cari tagihan','Buat tagihan','Tagihan hanya tersedia setelah login','detail-tagihan'],
+ pembayaran:['Riwayat pembayaran','Bukti bayar dan konfirmasi manual','Cari pembayaran','Konfirmasi bayar','Pembayaran harus diverifikasi sebelum dinyatakan lunas',null],
+ audit:['Riwayat aktivitas','Akses hanya untuk pemilik usaha','Cari aktivitas','Unduh riwayat','Riwayat tindakan tidak tersedia secara publik',null],
+ mikrotik:['Pemeriksaan jaringan','Area khusus teknisi; tindakan router belum aktif','Cari pelanggan','Periksa sambungan','Tidak ada perintah MikroTik yang dijalankan',null],
+ penagih:['Daftar tugas penagihan','Tagihan jatuh tempo, cicilan, dan setoran penagih','Cari pelanggan','Kirim pengingat','Tugas penagih tersedia setelah akun diverifikasi',null]
+ }[type];
+ let extra=type==='tagihan'?filters():'';
+ extra+=toolbar(data[2],data[3]);
+ if(type==='pelanggan'||type==='tagihan')extra+='<div class="data-column-hint">'+(type==='pelanggan'?'Nama pelanggan · Paket · Status':'Pelanggan · Periode · Nominal · Status')+'</div>';
+ extra+=locked('Akses petugas diperlukan',data[4]);
+ if(data[5])extra+='<div class="related-route"><a href="#'+data[5]+'">Lihat rancangan '+(type==='pelanggan'?'detail pelanggan':'detail tagihan')+' '+icon('arrow')+'</a></div>';
+ return panel(data[0],data[1],extra);
+}
+function detail(kind){
+ const customer=kind==='detail-pelanggan';
+ const info=customer?[
+ ['Informasi pelanggan','Nama, kontak dan alamat layanan','users'],
+ ['Paket internet','Kecepatan, biaya dan status layanan','signal'],
+ ['Riwayat tagihan','Jatuh tempo dan bukti pembayaran','invoice'],
+ ['Catatan teknisi','Penanganan gangguan pelanggan','wrench']
+ ]:[
+ ['Rincian tagihan','Periode, nominal dan jatuh tempo','invoice'],
+ ['Riwayat pembayaran','Pembayaran penuh atau sebagian','wallet'],
+ ['Sisa cicilan','Jumlah dibayar dan sisa yang perlu ditagih','coins'],
+ ['Bukti & audit','Bukti penerimaan serta perubahan status','shield']
+ ];
+ return panel(customer?'Detail Pelanggan':'Detail Tagihan','Data hanya dapat ditampilkan setelah login', '<div class="detail-rows">'+info.map(([name,sub,ic])=>'<div class="detail-row"><span class="detail-icon">'+icon(ic)+'</span><div><strong>'+name+'</strong><small>'+sub+'</small></div>'+status('Terkunci')+'</div>').join('')+'</div>');
+}
+export function cash(){return panel('Buku kas dan setoran','Pemasukan, pengeluaran dan setoran penagih',toolbar('Cari catatan kas','Catat transaksi')+locked('Buku kas belum tersedia','Catatan keuangan hanya tampil untuk petugas dengan izin.'));}
+export function settings(){
+ const entries=[
+ ['Profil usaha','Nama usaha dan identitas layanan','settings'],
+ ['Paket internet','Daftar paket dan tarif pelanggan','signal'],
+ ['Petugas dan akses','Owner, penagih dan teknisi','users'],
+ ['WhatsApp','Pengingat tagihan dan OTP','send'],
+ ['QRIS & rekening','Penerimaan dan rekonsiliasi manual','wallet'],
+ ['Keamanan','Sesi, perubahan dan riwayat sistem','shield']
+ ];
+ return panel('Pengaturan usaha','Hanya pemilik yang berwenang mengubah konfigurasi','<div class="settings-list">'+entries.map(([name,sub,ic])=>'<div class="setting-row"><span class="setting-icon">'+icon(ic)+'</span><div><strong>'+name+'</strong><small>'+sub+'</small></div>'+status('Belum aktif')+'</div>').join('')+'</div>');
+}
+export function menuScreen(){
+ const sections=[
+ ['Pekerjaan harian',['beranda','pelanggan','tagihan','pembayaran','kas']],
+ ['Ruang petugas',['penagih','mikrotik']],
+ ['Layanan lain',['portal','audit','pengaturan']]
+ ];
+ return '<div class="menu-layout">'+sections.map(([title,ids])=>'<section class="menu-section"><h2>'+title+'</h2><div class="menu-list">'+ids.map(id=>{
+  const r=ROUTES.find(x=>x.id===id);
+  return '<a class="menu-tile" href="#'+id+'"><span class="menu-icon">'+icon(r.symbol)+'</span><span><strong>'+r.label+'</strong><small>'+r.desc+'</small></span>'+icon('arrow')+'</a>';
+ }).join('')+'</div></section>').join('')+'</div>';
+}
+function portal(){
+ return panel('Cek tagihan pelanggan','Rancangan halaman publik dari tautan WhatsApp','<div class="portal-note">'+icon('shield')+'<div><strong>Tagihan hanya dibuka melalui tautan yang sah</strong><p>Verifikasi tanda tangan, masa berlaku, dan pembatasan akses dilakukan pada server. Halaman ini belum menerima atau menampilkan data pelanggan.</p></div></div>'+locked('Tautan tagihan belum diaktifkan','Jangan masukkan data pelanggan sebelum backend portal siap.'));
+}
+export function screen(id){
+ if(id==='beranda')return home();
+ if(['pelanggan','tagihan','pembayaran','mikrotik','audit','penagih'].includes(id))return listScreen(id);
+ if(id==='kas')return cash();
+ if(id==='pengaturan')return settings();
+ if(id==='menu')return menuScreen();
+ if(id==='portal')return portal();
+ if(['detail-pelanggan','detail-tagihan'].includes(id))return detail(id);
+ return home();
+}
+export function setFilter(value){if(['belum','cicil','lunas','semua'].includes(value))filterValue=value;}

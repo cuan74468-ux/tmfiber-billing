@@ -4,9 +4,9 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#FAFAFC",
-  "theme_color": "#FAFAFC",
-  "description": "Billing dan operasional WiFi TMfiber",
+  "background_color": "#F8F9FB",
+  "theme_color": "#F8F9FB",
+  "description": "Pelanggan, tagihan dan pembayaran WiFi dalam satu tempat.",
   "icons": [
     {
       "src": "assets/icon.svg",
