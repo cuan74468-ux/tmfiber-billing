@@ -60,8 +60,10 @@ function tmUser_(phone){
 }
 function tmKey_(prefix,phone){return prefix+tmSha_(phone).slice(0,40);}
 function tmRandomOtp_(){
- // Derive 6 digits from GAS UUID (not Math.random); verify provider/security requirements before production.
- var n=parseInt(Utilities.getUuid().replace(/-/g,'').slice(0,8),16);
+ // HMAC with server-side secret: predictable UUID/time alone cannot predict the OTP.
+ var entropy=Utilities.getUuid()+':'+Date.now()+':'+Utilities.getUuid();
+ var bytes=Utilities.computeHmacSha256Signature(entropy,tmConfig_().getProperty('TM_OTP_SECRET'));
+ var n=(bytes[0]&255)*16777216+(bytes[1]&255)*65536+(bytes[2]&255)*256+(bytes[3]&255);
  return String(100000+(n%900000));
 }
 function tmRequestOtp_(p){
@@ -69,9 +71,25 @@ function tmRequestOtp_(p){
  if(!token)throw tmErr_(503,'Gateway WhatsApp belum siap.');
  var cache=CacheService.getScriptCache(),lock=LockService.getScriptLock();
  if(!lock.tryLock(10000))throw tmErr_(429,'Coba sesaat lagi.');
- try{if(cache.get(tmKey_('cool_',phone)))return{cooldown_seconds:60};cache.put(tmKey_('cool_',phone),'1',60);}finally{lock.releaseLock();}
- var user=tmUser_(phone);if(!user)return{cooldown_seconds:60};
- var otp=tmRandomOtp_(),nonce=Utilities.getUuid();
+ var user,otp,nonce;
+ try{
+  if(cache.get(tmKey_('cool_',phone)))return{cooldown_seconds:60};
+  cache.put(tmKey_('cool_',phone),'1',60);
+  user=tmUser_(phone);
+  if(!user)return{cooldown_seconds:60};
+  var date=Utilities.formatDate(new Date(),TM_TZ,'yyyyMMdd');
+  var globalKey='tm_otp_sent_'+date;
+  var phoneKey='tm_otp_sent_'+date+'_'+tmSha_(phone).slice(0,16);
+  var total=Number(tmConfig_().getProperty(globalKey)||0);
+  var perPhone=Number(tmConfig_().getProperty(phoneKey)||0);
+  var configuredLimit=Number(tmConfig_().getProperty('TM_OTP_DAILY_LIMIT')||20);
+  var limit=Number.isFinite(configuredLimit)?Math.max(1,Math.min(100,Math.floor(configuredLimit))):20;
+  if(total>=limit||perPhone>=5)throw tmErr_(429,'Batas OTP harian tercapai. Hubungi pemilik usaha.');
+  // Count before requesting provider; failed sends still consume protective budget.
+  tmConfig_().setProperty(globalKey,String(total+1));
+  tmConfig_().setProperty(phoneKey,String(perPhone+1));
+  otp=tmRandomOtp_();nonce=Utilities.getUuid();
+ }finally{lock.releaseLock()}
  cache.put(tmKey_('otp_',phone),JSON.stringify({nonce:nonce,mac:tmSign_(tmConfig_().getProperty('TM_OTP_SECRET'),phone+':'+otp+':'+nonce)}),TM_OTP_TTL);
  cache.remove(tmKey_('tries_',phone));
  try{
