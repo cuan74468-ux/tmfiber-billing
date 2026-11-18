@@ -67,6 +67,15 @@ r=post('get_customers',{},token);
 assert.equal(r.status,'SUCCESS');assert.equal(r.data.total,1);
 r=post('get_dashboard_data',{},token);
 assert.equal(r.status,'SUCCESS');assert.equal(r.data.metrics.pelanggan,1);
+const period=new Date().getUTCFullYear()+String(new Date().getUTCMonth()+1).padStart(2,'0');
+sheets.Tagihan[0].push('jumlah_terbayar');
+sheets.Tagihan.push(['INV-STAGING-001',period,'SIM-C001','',150000,150000,'2026-11-01','CICIL','','','','',50000]);
+r=post('get_dashboard_data',{},token);
+assert.equal(r.status,'SUCCESS');
+assert.equal(r.data.summary.terkumpul,50000);
+assert.equal(r.data.summary.total_target,150000);
+assert.equal(r.data.metrics.belum_bayar,1);
+
 const invalid=token.slice(0,-1)+(token.endsWith('x')?'y':'x');
 fail(post('get_customers',{},invalid),401);
 assert.equal(post('logout',{},token).status,'SUCCESS');
