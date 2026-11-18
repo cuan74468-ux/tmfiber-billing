@@ -19,6 +19,8 @@ try{
   assert.equal(await page.locator('.kpi').count(),4);
   assert.equal(await page.locator('.quick-action').count(),4);
   assert.equal(await page.locator('.quick-action:not([disabled])').count(),0);
+  assert.equal(await page.locator('#operationSubmit:not([disabled])').count(),0);
+  assert.equal(await page.locator('#operationDialog').evaluate(d=>d.open),false);
   if(width<=760)assert.equal(await page.locator('.mobile-nav a:visible').count(),5);
   else assert.equal(await page.locator('.sidebar a[data-route]:visible').count(),5);
   const measure=async label=>{const x=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:innerWidth}));assert.ok(x.scroll<=x.inner+1,label+' overflow '+width+': '+JSON.stringify(x));};

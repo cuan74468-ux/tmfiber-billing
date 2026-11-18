@@ -27,7 +27,7 @@ function openOperation(mode,invoiceId=''){
  if(isInvoice){
   const select=q('opCustomer');select.replaceChildren();
   for(const r of readModelSnapshot().customers?.items||[])select.add(new Option(r.nama||r.id,r.id));
-  q('opPeriod').value=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit'}).format(new Date()).replace(/-/g,'').slice(0,6);
+  q('opPeriod').value=(()=>{const f=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit'}).formatToParts(new Date());return f.find(p=>p.type==='year').value+f.find(p=>p.type==='month').value;})();
  }
  if(isPayment){
   const select=q('opInvoice');select.replaceChildren();

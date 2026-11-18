@@ -55,7 +55,7 @@ function readList(type){
   const sub=type==='pelanggan'?(r.paket||'Paket belum diisi'):(r.periode||'Periode belum diisi');
   const amount=type==='pelanggan'?money(r.tarif):money(r.nominal);
   const state=r.status?escapeHtml(r.status):'—';
-  return '<div class="read-row"><div><strong>'+escapeHtml(name)+'</strong><small>'+escapeHtml(sub)+'</small></div><div class="read-meta"><strong>'+amount+'</strong><small>'+state+'</small>'+(type==='tagihan'&&canPay()&&state.toUpperCase()!=='LUNAS'?'<button class="inline-pay" type="button" data-command="payment-full" data-invoice-id="'+escapeHtml(r.id)+'">Catat lunas</button>':'')+'</div></div>';
+  return '<div class="read-row"><div><strong>'+escapeHtml(name)+'</strong><small>'+escapeHtml(sub)+'</small></div><div class="read-meta"><strong>'+amount+'</strong><small>'+state+'</small>'+(type==='tagihan'&&canPay()&&state.toUpperCase()!=='LUNAS'?'<button class="inline-pay" type="button" data-command="payment-full" data-invoice-id="'+escapeHtml(r.id)+'">Catat lunas</button><button class="inline-pay" type="button" data-command="payment-part" data-invoice-id="'+escapeHtml(r.id)+'">Catat cicilan</button>':'')+'</div></div>';
  }).join('');
  return '<div class="read-list">'+items+'</div>';
 }
