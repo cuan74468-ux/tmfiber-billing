@@ -128,7 +128,7 @@ function tmDashboard_(u){
   if(st==='LUNAS')settled++;else{
    unpaid++;
    var due=String(r.Tgl_Jatuh_Tempo||'').slice(0,10);
-   if(/^\\d{4}-\\d{2}-\\d{2}$/.test(due)&&due<today)overdue++;
+   if(/^\d{4}-\d{2}-\d{2}$/.test(due)&&due<today)overdue++;
   }
  });
  return{summary:{terkumpul:paid,total_target:target,persen:target?Math.round(paid/target*100):0},metrics:{pelanggan:customers.length,belum_bayar:unpaid,lunas:settled,jatuh_tempo:overdue},period:month};

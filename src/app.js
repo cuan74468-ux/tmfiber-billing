@@ -4,7 +4,7 @@ import {navigate,heroSummary,screen,setFilter,setReadModel} from './views/screen
 import {tmPost} from './core/api.js';
 import {hasStagingEndpoint} from './core/config.js';
 let sessionToken='',currentUser=null;
-const normalizePhone=input=>{let digits=String(input||'').replace(/\\D/g,'');if(digits.startsWith('62'))return digits;digits=digits.replace(/^0+/,'');return '62'+digits;};
+const normalizePhone=input=>{let digits=String(input||'').replace(/\D/g,'');if(digits.startsWith('62'))return digits;digits=digits.replace(/^0+/,'');return '62'+digits;};
 function render(){
  const id=location.hash.replace(/^#/,'').toLowerCase();
  const route=ROUTES.find(r=>r.id===id)||ROUTES[0];

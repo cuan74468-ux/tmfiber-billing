@@ -40,7 +40,7 @@ function readList(type){
  if(!source||!Array.isArray(source.items))return null;
  let records=source.items.slice(0,50);
  if(type==='tagihan')records=records.filter(r=>{
-  const st=String(r.status||'').trim().toUpperCase().replace(/\\s+/g,'_');
+  const st=String(r.status||'').trim().toUpperCase().replace(/\s+/g,'_');
   if(filterValue==='semua')return true;
   if(filterValue==='lunas')return st==='LUNAS';
   if(filterValue==='cicil')return st==='CICIL';
