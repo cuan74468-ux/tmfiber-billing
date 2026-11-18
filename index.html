@@ -52,5 +52,36 @@
   <form id="authForm" method="dialog"><div id="phoneStep"><label for="phone">Nomor WhatsApp</label><div class="phone-field"><span>+62</span><input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="812xxxxxxxx" disabled></div><button id="otpSend" class="solid-button" type="button" disabled>Kirim kode OTP</button></div><div id="otpStep" hidden><label for="otp">Kode OTP 6 digit</label><div class="phone-field"><input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" disabled></div><button id="otpVerify" class="solid-button" type="button" disabled>Verifikasi OTP</button><button id="otpBack" class="secondary-button" type="button">Ganti nomor</button></div><button id="logoutButton" class="secondary-button" type="button" hidden>Keluar dari akun</button><p id="authMessage" class="auth-message" role="status" aria-live="polite">Login belum diaktifkan. Tidak ada nomor atau kode OTP yang diproses.</p></form>
  </div>
 </dialog>
+<dialog id="operationDialog" aria-labelledby="operationTitle">
+ <header class="dialog-header"><span class="dialog-logo">T<span>.</span></span><button id="operationClose" class="dialog-close" type="button" aria-label="Tutup formulir">×</button></header>
+ <div class="dialog-body">
+  <p class="eyebrow">FORMULIR PETUGAS · STAGING</p>
+  <h2 id="operationTitle">Pekerjaan billing</h2>
+  <p id="operationDescription">Pengisian data hanya diperbolehkan setelah pengujian keamanan.</p>
+  <form id="operationForm">
+   <div data-op-panel="customer">
+    <label for="opName">Nama pelanggan</label><input id="opName" class="field" name="customer_name" maxlength="100" autocomplete="off" required>
+    <label for="opPhone">Nomor WhatsApp</label><input id="opPhone" class="field" name="phone" inputmode="tel" autocomplete="off" required>
+    <label for="opAddress">Alamat</label><input id="opAddress" class="field" name="address" maxlength="200" required>
+    <label for="opPackage">Paket internet</label><input id="opPackage" class="field" name="package" maxlength="75" required>
+    <label for="opPrice">Tarif bulanan (Rp)</label><input id="opPrice" class="field" name="tariff" type="number" min="1000" max="100000000" step="1" required>
+    <label for="opDue">Tanggal jatuh tempo (1–28)</label><input id="opDue" class="field" name="due" type="number" min="1" max="28" step="1" required>
+   </div>
+   <div data-op-panel="invoice" hidden>
+    <label for="opCustomer">Pelanggan</label><select id="opCustomer" class="field" name="customer" required></select>
+    <label for="opPeriod">Periode tagihan (YYYYMM)</label><input id="opPeriod" class="field" name="period" inputmode="numeric" maxlength="6" pattern="20[0-9]{4}" required>
+   </div>
+   <div data-op-panel="payment" hidden>
+    <label for="opInvoice">Tagihan</label><select id="opInvoice" class="field" name="invoice" required></select>
+    <label for="opMethod">Metode bayar manual</label>
+    <select id="opMethod" class="field" name="method"><option value="TUNAI">Tunai</option><option value="TRANSFER">Transfer terverifikasi</option><option value="QRIS_STATIC_MANUAL">QRIS statis terverifikasi</option></select>
+    <div id="opAmountGroup" hidden><label for="opAmount">Jumlah cicilan (Rp)</label><input id="opAmount" class="field" name="amount" type="number" min="1" step="1"></div>
+    <p class="operation-warning">Pembayaran harus sudah benar-benar diterima sebelum dicatat. Tidak ada konfirmasi otomatis dari bank.</p>
+   </div>
+   <p id="operationStatus" role="status" class="auth-message" aria-live="polite"></p>
+   <button id="operationSubmit" class="solid-button" type="submit" disabled>Simpan di STAGING</button>
+  </form>
+ </div>
+</dialog>
 </body>
 </html>

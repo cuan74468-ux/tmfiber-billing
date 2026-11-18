@@ -2,8 +2,47 @@
 import {q,ROUTES} from './core/navigation.js';
 import {navigate,heroSummary,screen,setFilter,setReadModel} from './views/screens.js';
 import {tmPost} from './core/api.js';
-import {hasStagingEndpoint} from './core/config.js';
+import {TM_STAGE,hasStagingEndpoint} from './core/config.js';
 let sessionToken='',currentUser=null;
+
+let opMode='',opRequestKey='',opBusy=false;
+function openOperation(mode,invoiceId=''){
+ const isCustomer=mode==='customer',isInvoice=mode==='invoice',isPayment=mode==='payment-full'||mode==='payment-part';
+ const allowed=currentUser?.role==='OWNER'&&hasStagingEndpoint()&&!TM_STAGE.readOnly&&TM_STAGE.mutationsEnabled&&(!isPayment||TM_STAGE.financeEnabled);
+ if(!allowed)return;
+ if(!isCustomer&&!isInvoice&&!isPayment)return;
+ opMode=mode;opRequestKey=crypto.randomUUID();opBusy=false;
+ const dialog=q('operationDialog'),form=q('operationForm');
+ form.reset();
+ for(const section of dialog.querySelectorAll('[data-op-panel]')){
+  const show=section.dataset.opPanel===(isCustomer?'customer':isInvoice?'invoice':'payment');
+  section.hidden=!show;
+  for(const field of section.querySelectorAll('input,select'))field.disabled=!show;
+ }
+ q('operationTitle').textContent=isCustomer?'Tambah pelanggan':isInvoice?'Buat tagihan':mode==='payment-part'?'Catat cicilan':'Tandai lunas';
+ q('operationDescription').textContent='Hanya untuk lingkungan STAGING yang telah diverifikasi.';
+ q('operationStatus').textContent='';
+ q('operationSubmit').disabled=false;
+ q('operationSubmit').textContent='Simpan di STAGING';
+ if(isInvoice){
+  const select=q('opCustomer');select.replaceChildren();
+  for(const r of readModelSnapshot().customers?.items||[])select.add(new Option(r.nama||r.id,r.id));
+  q('opPeriod').value=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit'}).format(new Date()).replace(/-/g,'').slice(0,6);
+ }
+ if(isPayment){
+  const select=q('opInvoice');select.replaceChildren();
+  for(const r of readModelSnapshot().invoices?.items||[]){
+   if(String(r.status||'').toUpperCase()==='LUNAS')continue;
+   select.add(new Option((r.id||'Tagihan')+' · '+(r.nominal||'—'),r.id));
+  }
+  if(invoiceId)select.value=invoiceId;
+  q('opAmountGroup').hidden=mode!=='payment-part';q('opAmount').disabled=mode!=='payment-part';
+ }
+ dialog.showModal();
+}
+let snapshot={};
+const readModelSnapshot=()=>snapshot;
+
 const normalizePhone=input=>{let digits=String(input||'').replace(/\D/g,'');if(digits.startsWith('62'))return digits;digits=digits.replace(/^0+/,'');return '62'+digits;};
 function render(){
  const id=location.hash.replace(/^#/,'').toLowerCase();
@@ -29,8 +68,8 @@ async function loadReadData(){
    tmPost('get_customers',{limit:50},sessionToken),
    tmPost('get_invoices',{limit:50},sessionToken)
   ]);
-  setReadModel({dashboard,customers,invoices});render();
- }catch(e){setReadModel(null);render();q('authMessage').textContent='Gagal membaca STAGING: '+e.message;}
+  snapshot={dashboard,customers,invoices};setReadModel(snapshot);render();
+ }catch(e){snapshot={};setReadModel(null);render();q('authMessage').textContent='Gagal membaca STAGING: '+e.message;}
 }
 function init(){
  navigate();
@@ -72,11 +111,38 @@ function init(){
   finally{verify.disabled=false;}
  });
  q('logoutButton').addEventListener('click',async()=>{
-  const oldToken=sessionToken;sessionToken='';currentUser=null;setReadModel(null);
+  const oldToken=sessionToken;sessionToken='';currentUser=null;snapshot={};setReadModel(null);
   dialog.close();render();
   if(oldToken)try{await tmPost('logout',{},oldToken);}catch(e){console.warn('Revokasi sesi server belum terkonfirmasi.');}
  });
  q('panel').addEventListener('click',e=>{const chip=e.target.closest('[data-filter]');if(chip){setFilter(chip.dataset.filter);render();}});
+ q('panel').addEventListener('click',e=>{
+  const cmd=e.target.closest('[data-command]');
+  if(cmd)openOperation(cmd.dataset.command,cmd.dataset.invoiceId||'');
+ });
+ q('operationClose').addEventListener('click',()=>q('operationDialog').close());
+ q('operationForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(opBusy||!opMode||!opRequestKey)return;
+  const operation=opMode,key=opRequestKey;
+  const isCustomer=operation==='customer',isInvoice=operation==='invoice',isInstallment=operation==='payment-part';
+  const payload=isCustomer?{nama:q('opName').value,no_wa:normalizePhone(q('opPhone').value),alamat:q('opAddress').value,paket:q('opPackage').value,tarif:Number(q('opPrice').value),jatuh_tempo:Number(q('opDue').value)}
+    :isInvoice?{id_pelanggan:q('opCustomer').value,periode:q('opPeriod').value}
+    :{id_tagihan:q('opInvoice').value,metode_bayar:q('opMethod').value,...(isInstallment?{nominal:Number(q('opAmount').value)}:{})};
+  if(!isCustomer&&!isInvoice){
+   if(!window.confirm('Pastikan uang benar-benar diterima sebelum mencatat pembayaran. Lanjutkan?'))return;
+  }
+  payload.idempotency_key=key;
+  opBusy=true;q('operationSubmit').disabled=true;q('operationStatus').textContent='Menyimpan perubahan...';
+  try{
+   const action=isCustomer?'save_customer':isInvoice?'create_invoice':isInstallment?'record_installment':'mark_as_paid';
+   await tmPost(action,payload,sessionToken);
+   q('operationDialog').close();opRequestKey='';
+   await loadReadData();
+  }catch(err){
+   q('operationStatus').textContent=err.message+' Jika mengulang, permintaan menggunakan kunci transaksi yang sama.';
+  }finally{opBusy=false;q('operationSubmit').disabled=false;}
+ });
+
  q('panel').addEventListener('input',e=>{
   if(!e.target.matches('[data-list-search]'))return;
   const needle=e.target.value.trim().toLocaleLowerCase('id-ID');

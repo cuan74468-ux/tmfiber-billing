@@ -1,4 +1,5 @@
 import {icon,ROUTES,q} from '../core/navigation.js';
+import {TM_STAGE,hasStagingEndpoint} from '../core/config.js';
 let filterValue='belum';
 let readModel=null;
 export function setReadModel(model){readModel=model&&typeof model==='object'?model:null;}
@@ -13,14 +14,16 @@ export function navigate(){
 const status=(text,tone='neutral')=>'<span class="pill '+tone+'">'+text+'</span>';
 const locked=(title,description)=>'<div class="empty"><span class="empty-icon">'+icon('lock')+'</span><h3>'+title+'</h3><p>'+description+'</p></div>';
 const search=(label)=>'<label class="search-box">'+icon('search')+'<span class="sr-only">'+label+'</span><input type="search" data-list-search placeholder="'+label+'" '+(readModel?'':'disabled')+'></label>';
-const action=(label,ic='plus')=>'<button class="outline-button" type="button" disabled>'+icon(ic)+'<span>'+label+'</span></button>';
+const canCreate=()=>Boolean(readModel&&hasStagingEndpoint()&&TM_STAGE.mutationsEnabled&&!TM_STAGE.readOnly);
+const canPay=()=>Boolean(canCreate()&&TM_STAGE.financeEnabled);
+const action=(label,ic='plus',command='')=>'<button class="outline-button" type="button" '+(command&&canCreate()?'data-command="'+command+'"':'disabled')+'>'+icon(ic)+'<span>'+label+'</span></button>';
 const header=(title,sub,button='')=>'<header class="section-head"><div><h2>'+title+'</h2><p>'+sub+'</p></div>'+button+'</header>';
 const panel=(title,sub,body,button='')=>'<section class="panel">'+header(title,sub,button)+body+'</section>';
 const filters=()=>{
  const opts=[['belum','Belum bayar'],['cicil','Cicilan'],['lunas','Lunas'],['semua','Semua']];
  return '<div class="filter-tabs" role="group" aria-label="Status tagihan">'+opts.map(([v,l])=>'<button class="filter'+(filterValue===v?' selected':'')+'" type="button" data-filter="'+v+'" aria-pressed="'+(filterValue===v)+'">'+l+'</button>').join('')+'</div>';
 };
-const toolbar=(placeholder,button)=>'<div class="toolbar">'+search(placeholder)+(button?action(button):'')+'</div>';
+const toolbar=(placeholder,button)=>'<div class="toolbar">'+search(placeholder)+(button?action(button,'plus',button==='Tambah pelanggan'?'customer':button==='Buat tagihan'?'invoice':''):'')+'</div>';
 function kpi(label,kind,ic,value=null){
  return '<div class="kpi '+kind+'"><div class="kpi-top"><span>'+label+'</span><span class="kpi-icon">'+icon(ic)+'</span></div><strong>'+count(value)+'</strong><small>'+(readModel?'Data STAGING':'Data setelah login')+'</small></div>';
 }
@@ -32,7 +35,7 @@ export function heroSummary(id){
 }
 function quickLinks(){
  const items=[['Kirim tagihan','send'],['Catat bayar','wallet'],['Tambah pelanggan','users'],['Catat kas','cash']];
- return '<section class="quick-section">'+header('Pekerjaan cepat','Tindakan tersedia setelah login')+'<div class="quick-grid">'+items.map(([name,ic])=>'<button class="quick-action" disabled type="button"><span class="quick-icon">'+icon(ic)+'</span><strong>'+name+'</strong></button>').join('')+'</div></section>';
+ return '<section class="quick-section">'+header('Pekerjaan cepat','Tindakan tersedia setelah login')+'<div class="quick-grid">'+items.map(([name,ic])=>{const command=name==='Tambah pelanggan'?'customer':name==='Catat bayar'?'payment-full':'';const allowed=command==='customer'?canCreate():command==='payment-full'?canPay():false;return '<button class="quick-action" '+(allowed?'data-command="'+command+'"':'disabled')+' type="button"><span class="quick-icon">'+icon(ic)+'</span><strong>'+name+'</strong></button>';}).join('')+'</div></section>';
 }
 function readList(type){
  if(!readModel)return null;
@@ -52,7 +55,7 @@ function readList(type){
   const sub=type==='pelanggan'?(r.paket||'Paket belum diisi'):(r.periode||'Periode belum diisi');
   const amount=type==='pelanggan'?money(r.tarif):money(r.nominal);
   const state=r.status?escapeHtml(r.status):'—';
-  return '<div class="read-row"><div><strong>'+escapeHtml(name)+'</strong><small>'+escapeHtml(sub)+'</small></div><div class="read-meta"><strong>'+amount+'</strong><small>'+state+'</small></div></div>';
+  return '<div class="read-row"><div><strong>'+escapeHtml(name)+'</strong><small>'+escapeHtml(sub)+'</small></div><div class="read-meta"><strong>'+amount+'</strong><small>'+state+'</small>'+(type==='tagihan'&&canPay()&&state.toUpperCase()!=='LUNAS'?'<button class="inline-pay" type="button" data-command="payment-full" data-invoice-id="'+escapeHtml(r.id)+'">Catat lunas</button>':'')+'</div></div>';
  }).join('');
  return '<div class="read-list">'+items+'</div>';
 }
@@ -70,7 +73,7 @@ function listScreen(type){
  penagih:['Daftar tugas penagihan','Tagihan jatuh tempo, cicilan, dan setoran penagih','Cari pelanggan','Kirim pengingat','Tugas penagih tersedia setelah akun diverifikasi',null]
  }[type];
  let extra=type==='tagihan'?filters():'';
- extra+=toolbar(data[2],data[3]);
+ extra+=toolbar(data[2],type==='pelanggan'?'Tambah pelanggan':type==='tagihan'?'Buat tagihan':null);
  if(type==='pelanggan'||type==='tagihan')extra+='<div class="data-column-hint">'+(type==='pelanggan'?'Nama pelanggan · Paket · Status':'Pelanggan · Periode · Nominal · Status')+'</div>';
  extra+=(readList(type)||locked('Akses petugas diperlukan',data[4]));
  if(data[5])extra+='<div class="related-route"><a href="#'+data[5]+'">Lihat rancangan '+(type==='pelanggan'?'detail pelanggan':'detail tagihan')+' '+icon('arrow')+'</a></div>';

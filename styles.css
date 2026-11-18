@@ -33,3 +33,12 @@ dialog{border:1px solid var(--line);padding:0;border-radius:20px;background:#fff
 .read-row small{display:block;color:#8995A2;font-size:10px;margin-top:4px;overflow-wrap:anywhere}
 .read-meta{text-align:right}
 @media(max-width:760px){.read-list{margin-inline:-17px}.read-row{padding:13px 17px}}
+
+/* Shared operational forms — visible only after server-approved staging login */
+.field{display:block;width:100%;border:1px solid #DDE5E1;border-radius:11px;min-height:46px;padding:10px 12px;margin:6px 0 15px;background:#fff;color:#17212F;font:inherit}
+.field:focus-visible{outline:3px solid #A3D6BA;outline-offset:1px}
+.operation-warning{padding:12px;border-radius:12px;background:#FFF0E3;color:#925A2E;font-size:12px}
+.inline-pay{display:block;border:1px solid #BCD9CA;border-radius:8px;padding:6px 10px;background:#E8F5ED;color:#174F43;font-size:10px;font-weight:750;margin-top:7px}
+#operationDialog{width:min(460px,calc(100vw - 22px))}
+#operationForm label{display:block;font-size:12px;color:#3D544A;font-weight:700}
+#operationForm>[data-op-panel]{max-height:55vh;overflow-y:auto;padding-inline:2px}
