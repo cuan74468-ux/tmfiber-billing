@@ -83,6 +83,7 @@ async function main(){
  await page.locator('#operationSubmit').click();
  await page.locator('#operationDialog').waitFor({state:'hidden'});
  assert.equal(invoices[0].status,'CICIL');
+ await page.locator('[data-filter="cicil"]').click();
  await page.locator('[data-command="payment-full"]').first().click();
  await page.locator('#operationSubmit').click();
  await page.locator('#operationDialog').waitFor({state:'hidden'});
