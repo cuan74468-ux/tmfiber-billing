@@ -1,38 +1,32 @@
 # TMfiber Billing — Everyday Billing V3
 
-**Status 18 November 2026: STAGING PREPARATION — BELUM SIAP TRANSAKSI PELANGGAN.**
+**Status: STAGING SIAP DIPASANG — BELUM GO-LIVE UNTUK TRANSAKSI NYATA.**
 
-PWA RT/RW Net: GitHub Pages public UI + Google Apps Script private API + Google Sheets private data. Fase 1 adalah single-tenant. Backend produksi sebelumnya tidak diubah.
+Stack: GitHub Pages + Google Apps Script + Google Sheets privat. Fase 1 hanya satu usaha RT/RW Net, Owner-only untuk tindakan finansial. Repository publik **tidak** menyimpan nomor pelanggan, token Fonnte, atau kredensial.
 
-## Yang sudah benar-benar terverifikasi
-- Everyday Billing V3: 13 rute, Chrome CI PASS pada 360, 390, 412, 768 dan 1280 px tanpa overflow horizontal.
-- Backend GAS baru di folder gas: OTP WhatsApp via provider (belum diuji nyata), sesi HMAC, validasi role Owner, baca dashboard/pelanggan/tagihan/kas.
-- Manual payment dan cicilan di gas/Payments.gs: sumber STAGING dikunci dengan ScriptProperties, LockService, idempotency key + fingerprint, ledger PENDING/COMMITTED, audit hash chain.
-- CI simulasi backend PASS (OTP wrong/replay/revoke; installment/settlement/duplicate/partial write). **Simulasi bukan UAT browser nyata atau bukti finansial produksi aman.**
-- Google Sheets STAGING terpisah dibuat TANPA menyalin pelanggan asli; tujuh tab (enam lama dengan header kompatibel + Pembayaran_Ledger).
-- CI memindai file publik untuk pola kunci/token yang umum dan nomor WA pelanggan yang menyerupai nomor nyata.
-- GitHub Actions otomatis membuat paket satu file Code.gs untuk deployment STAGING melalui browser.
+## Kode dan pengujian yang telah diselesaikan
 
-## Yang masih tertutup
-- Frontend config src/core/config.js memuat apiEndpoint kosong. Tidak ada request GAS saat website dibuka normal.
-- Tidak ada GAS Web App STAGING yang terhubung dari browser, OTP Fonnte nyata, akun test Owner, atau pengujian CORS/redirect.
-- Tidak ada CRUD penambahan pelanggan/generasi tagihan nyata yang sudah diuji; no production payment.
-- Manual payment GAS hanya kode STAGING yang default gate-nya mati. Pembayaran otomatis, komisi kolektor, pengingat WA, dan MikroTik isolir tetap nonaktif.
-- Frontend adalah public shell; jangan berikan sebagai billing produksi sampai UAT dan release Owner sukses.
+- Frontend 13 rute mobile-first dengan form pelanggan, penerbitan tagihan, cicilan, pelunasan, dan tampilan kas. Form transaksi dinonaktifkan oleh default melalui `src/core/config.js`.
+- Backend GAS `gas/Code.gs`, `gas/Customers.gs`, `gas/Payments.gs`, `gas/Diagnostics.gs`: OTP & sesi HMAC, pembacaan Owner-only, pembuatan pelanggan/tagihan, pembayaran manual dengan LockService, ledger, idempotensi, hash audit, dan pemeriksaan pra-aktivasi.
+- STAGING Google Sheets privat terpisah **8 tab** dengan header forward-only dan tanpa pelanggan asli. Produksi tidak diubah.
+- GitHub Actions: scanner pola rahasia, unit simulasi OTP/CRUD/pembayaran, 13 halaman × viewport 360–1280, dan alur browser sintetis Owner → pelanggan → tagihan → cicilan → lunas.
+- GitHub Actions juga membuat artifact instalasi `tmfiber-staging-gas-source` (satu file `Code.gs`).
+- Uji otomatis tidak membuktikan OTP Fonnte sungguhan, CORS/redirect GAS, atau pembayaran terhadap Google Sheets aktual.
 
-## Jalur tercepat menuju pilot
-1. Buka dokumen docs/STAGING_DEPLOY_BROWSER_GUIDE.md.
-2. Pasang paket Code.gs dari artifact GitHub Actions dalam **Apps Script baru** (bukan proyek lama).
-3. Masukkan ScriptProperties dan nomor Owner test hanya di tempat privat. Jangan tempel token di chat/GitHub.
-4. Uji POST text/plain dari browser, lalu sambungkan apiEndpoint STAGING, OTP dan read-only.
-5. Setelah valid, baru uji manual payments di STAGING serta recovery ledger, kemudian UAT Owner dan persetujuan production.
+## Urutan aktivasi yang masih wajib
 
-## Referensi
-- docs/API_CONTRACT.md
-- docs/EVERYDAY_BILLING_V3_CHECKPOINT.md
-- docs/STAGING_DEPLOY_BROWSER_GUIDE.md
-- docs/STAGING_MANUAL_PAYMENT_DESIGN.md
-- docs/MVP_CUSTOMER_DELIVERY_GATE.md
-- SECURITY.md
+1. Deploy **Apps Script baru** untuk STAGING, menggunakan artifact GAS satu file. Jangan timpa proyek GAS lama.
+2. Isi ScriptProperties privat (tanpa membagikan rahasia) dan akun Owner test di Sheets STAGING. Jalankan `TMFIBER_STAGING_PREFLIGHT`.
+3. Buktikan POST dari GitHub Pages ke endpoint `/exec` benar-benar dapat membaca respons.
+4. Uji OTP nyata (termasuk salah, kedaluwarsa, replay dan rate limit), akses data Owner, CRUD, transaksi manual dan ledger pada STAGING.
+5. Backup produksi, audit dan UAT Owner sebelum konfigurasi produksi. QRIS otomatis dan MikroTik isolir tetap dilarang sampai approval terpisah.
 
-Tidak menggunakan VPS berbayar. Repository ini PUBLIC: JANGAN menyimpan Fonnte token, secret QRIS, token MikroTik, nomor pelanggan, data tagihan, atau session token.
+**Dokumen tindakan browser:** [STAGING_DEPLOY_BROWSER_GUIDE](docs/STAGING_DEPLOY_BROWSER_GUIDE.md)
+
+**Go-live gate:** [GO_LIVE_GATE_V1](docs/GO_LIVE_GATE_V1.md)
+
+**Kontrak:** [API_CONTRACT](docs/API_CONTRACT.md)
+
+**Keamanan:** [SECURITY](SECURITY.md)
+
+Kode di `main` bukan izin menyalakan transaksi produksi. Tidak ada implementasi bank auto-payment ataupun command isolir RouterOS yang aktif.
