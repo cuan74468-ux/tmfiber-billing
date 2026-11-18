@@ -64,7 +64,7 @@ assert.equal(values.Audit_Log[2][6],firstHash);
 assert.equal(pay('synthetic-key-0002',false,0).already_processed,true);
 fails(()=>pay('synthetic-key-0003',false,0),409);
 props.set('TM_DRY_RUN','false');
-fails(()=>pay('synthetic-key-0004',false,0),403);
+fails(()=>pay('synthetic-key-0004',false,0),503);
 props.set('TM_DRY_RUN','true');
 dbName='TMfiber PRODUKSI';
 fails(()=>pay('synthetic-key-0004',false,0),403);
