@@ -114,14 +114,24 @@ function tmPage_(rows,p){var n=Math.max(1,Math.min(100,Math.floor(Number(p.limit
 function tmDashboard_(u){
  tmOwner_(u);
  var customers=tmRows_('Pelanggan'),invoices=tmRows_('Tagihan'),month=Utilities.formatDate(new Date(),TM_TZ,'yyyyMM');
- var target=0,paid=0,unpaid=0,settled=0;
+ var target=0,paid=0,unpaid=0,settled=0,overdue=0;
+ var today=Utilities.formatDate(new Date(),TM_TZ,'yyyy-MM-dd');
  invoices.forEach(function(r){
   if(String(r.Periode||'').replace(/[^0-9]/g,'').slice(0,6)!==month)return;
   var amount=Number(r.Total_Tagihan||r.Nominal||0);if(!Number.isFinite(amount)||amount<0)return;
   target+=amount;
-  if(String(r.Status_Bayar||'').toUpperCase()==='LUNAS'){paid+=amount;settled++;}else unpaid++;
+  var st=String(r.Status_Bayar||'').trim().toUpperCase();
+  var hasPartial=r.jumlah_terbayar!==undefined && r.jumlah_terbayar!=='' && r.jumlah_terbayar!==null;
+  var credited=hasPartial?Number(r.jumlah_terbayar):st==='LUNAS'?amount:0;
+  if(!Number.isFinite(credited)||credited<0||credited>amount)throw tmErr_(409,'Cicilan STAGING tidak konsisten.');
+  paid+=credited;
+  if(st==='LUNAS')settled++;else{
+   unpaid++;
+   var due=String(r.Tgl_Jatuh_Tempo||'').slice(0,10);
+   if(/^\\d{4}-\\d{2}-\\d{2}$/.test(due)&&due<today)overdue++;
+  }
  });
- return{summary:{terkumpul:paid,total_target:target,persen:target?Math.round(paid/target*100):0},metrics:{pelanggan:customers.length,belum_bayar:unpaid,lunas:settled,jatuh_tempo:null},period:month};
+ return{summary:{terkumpul:paid,total_target:target,persen:target?Math.round(paid/target*100):0},metrics:{pelanggan:customers.length,belum_bayar:unpaid,lunas:settled,jatuh_tempo:overdue},period:month};
 }
 function tmCustomers_(u,p){tmOwner_(u);return tmPage_(tmRows_('Pelanggan').map(function(r){return{id:r.ID_Pelanggan,nama:r.Nama,no_wa:r.No_WA,paket:r.Paket,tarif:r.Tarif,jatuh_tempo:r.Jatuh_Tempo,status:r.Status};}),p);}
 function tmInvoices_(u,p){tmOwner_(u);return tmPage_(tmRows_('Tagihan').map(function(r){return{id:r.ID_Tagihan,pelanggan:r.ID_Pelanggan,periode:r.Periode,nominal:r.Total_Tagihan,jatuh_tempo:r.Tgl_Jatuh_Tempo,status:r.Status_Bayar,metode:r.Metode_Bayar};}),p);}

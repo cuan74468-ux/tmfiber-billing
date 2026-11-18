@@ -4,6 +4,7 @@ import {navigate,heroSummary,screen,setFilter,setReadModel} from './views/screen
 import {tmPost} from './core/api.js';
 import {hasStagingEndpoint} from './core/config.js';
 let sessionToken='',currentUser=null;
+const normalizePhone=input=>{let digits=String(input||'').replace(/\\D/g,'');if(digits.startsWith('62'))return digits;digits=digits.replace(/^0+/,'');return '62'+digits;};
 function render(){
  const id=location.hash.replace(/^#/,'').toLowerCase();
  const route=ROUTES.find(r=>r.id===id)||ROUTES[0];
@@ -54,7 +55,7 @@ function init(){
  send.addEventListener('click',async()=>{
   send.disabled=true;message.textContent='Meminta kode OTP...';
   try{
-   await tmPost('request_otp',{no_wa:'62'+phone.value.replace(/\D/g,'').replace(/^0+/,'')});
+   await tmPost('request_otp',{no_wa:normalizePhone(phone.value)});
    q('otpStep').hidden=false;q('phoneStep').hidden=true;otp.disabled=false;verify.disabled=false;message.textContent='Jika akun terdaftar, kode dikirim ke WhatsApp.';otp.focus();
   }catch(e){message.textContent=e.message;}
   finally{send.disabled=!enabled;}
@@ -63,7 +64,7 @@ function init(){
  verify.addEventListener('click',async()=>{
   verify.disabled=true;message.textContent='Memverifikasi kode...';
   try{
-   const data=await tmPost('verify_otp',{no_wa:'62'+phone.value.replace(/\D/g,'').replace(/^0+/ ,''),otp:otp.value});
+   const data=await tmPost('verify_otp',{no_wa:normalizePhone(phone.value),otp:otp.value});
    if(!data.session_token||data.user?.role!=='OWNER')throw new Error('Akun pengujian belum memiliki izin Owner.');
    sessionToken=data.session_token;currentUser={role:data.user.role,nama:data.user.nama};
    dialog.close();render();await loadReadData();
@@ -76,6 +77,11 @@ function init(){
   if(oldToken)try{await tmPost('logout',{},oldToken);}catch(e){console.warn('Revokasi sesi server belum terkonfirmasi.');}
  });
  q('panel').addEventListener('click',e=>{const chip=e.target.closest('[data-filter]');if(chip){setFilter(chip.dataset.filter);render();}});
+ q('panel').addEventListener('input',e=>{
+  if(!e.target.matches('[data-list-search]'))return;
+  const needle=e.target.value.trim().toLocaleLowerCase('id-ID');
+  q('panel').querySelectorAll('.read-row').forEach(row=>{row.hidden=!row.textContent.toLocaleLowerCase('id-ID').includes(needle);});
+ });
  function connection(){q('offlineNotice').hidden=navigator.onLine;}
  window.addEventListener('online',connection);window.addEventListener('offline',connection);connection();
  window.addEventListener('hashchange',()=>{setFilter('belum');render();window.scrollTo(0,0);});

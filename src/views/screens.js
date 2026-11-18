@@ -3,8 +3,8 @@ let filterValue='belum';
 let readModel=null;
 export function setReadModel(model){readModel=model&&typeof model==='object'?model:null;}
 const escapeHtml=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-const money=v=>Number.isFinite(Number(v))?'Rp '+new Intl.NumberFormat('id-ID').format(Number(v)):'—';
-const count=v=>Number.isFinite(Number(v))?new Intl.NumberFormat('id-ID').format(Number(v)):'—';
+const money=v=>v===null||v===undefined||v===''?'—':Number.isFinite(Number(v))?'Rp '+new Intl.NumberFormat('id-ID').format(Number(v)):'—';
+const count=v=>v===null||v===undefined||v===''?'—':Number.isFinite(Number(v))?new Intl.NumberFormat('id-ID').format(Number(v)):'—';
 const MAIN=['beranda','tagihan','pelanggan','kas','menu'];
 function navItem(r){const a=document.createElement('a');a.href='#'+r.id;a.dataset.route=r.id;a.innerHTML=icon(r.symbol)+'<span>'+r.label+'</span>';return a;}
 export function navigate(){
@@ -12,7 +12,7 @@ export function navigate(){
 }
 const status=(text,tone='neutral')=>'<span class="pill '+tone+'">'+text+'</span>';
 const locked=(title,description)=>'<div class="empty"><span class="empty-icon">'+icon('lock')+'</span><h3>'+title+'</h3><p>'+description+'</p></div>';
-const search=(label)=>'<label class="search-box">'+icon('search')+'<span class="sr-only">'+label+'</span><input type="search" placeholder="'+label+'" disabled></label>';
+const search=(label)=>'<label class="search-box">'+icon('search')+'<span class="sr-only">'+label+'</span><input type="search" data-list-search placeholder="'+label+'" '+(readModel?'':'disabled')+'></label>';
 const action=(label,ic='plus')=>'<button class="outline-button" type="button" disabled>'+icon(ic)+'<span>'+label+'</span></button>';
 const header=(title,sub,button='')=>'<header class="section-head"><div><h2>'+title+'</h2><p>'+sub+'</p></div>'+button+'</header>';
 const panel=(title,sub,body,button='')=>'<section class="panel">'+header(title,sub,button)+body+'</section>';
@@ -22,7 +22,7 @@ const filters=()=>{
 };
 const toolbar=(placeholder,button)=>'<div class="toolbar">'+search(placeholder)+(button?action(button):'')+'</div>';
 function kpi(label,kind,ic,value=null){
- return '<div class="kpi '+kind+'"><div class="kpi-top"><span>'+label+'</span><span class="kpi-icon">'+icon(ic)+'</span></div><strong aria-label="Belum tersedia">—</strong><small>Data setelah login</small></div>';
+ return '<div class="kpi '+kind+'"><div class="kpi-top"><span>'+label+'</span><span class="kpi-icon">'+icon(ic)+'</span></div><strong>'+count(value)+'</strong><small>'+(readModel?'Data STAGING':'Data setelah login')+'</small></div>';
 }
 export function heroSummary(id){
  if(id==='beranda'){const data=readModel?.dashboard;return '<div class="summary-wrap"><div class="featured-balance"><span>Penerimaan bulan ini · STAGING</span><strong>'+(data?money(data.summary?.terkumpul):'Rp •••••••')+'</strong><div class="balance-bottom">'+icon('shield')+' <span>'+(data?'Data pengujian terotorisasi':'Hanya tampil setelah masuk')+'</span></div></div><div class="kpi-grid">'+kpi('Belum bayar','warning','clock',data?.metrics?.belum_bayar)+kpi('Sudah lunas','success','check',data?.metrics?.lunas)+kpi('Pelanggan','blue','users',data?.metrics?.pelanggan)+kpi('Jatuh tempo','danger','calendar',data?.metrics?.jatuh_tempo)+'</div></div>';}
@@ -38,8 +38,16 @@ function readList(type){
  if(!readModel)return null;
  const source=type==='pelanggan'?readModel.customers:type==='tagihan'?readModel.invoices:type==='pembayaran'?readModel.invoices:null;
  if(!source||!Array.isArray(source.items))return null;
- if(source.items.length===0)return locked('Belum ada data STAGING','Tambahkan data pengujian setelah konfigurasi akun tersedia.');
- const items=source.items.slice(0,50).map(r=>{
+ let records=source.items.slice(0,50);
+ if(type==='tagihan')records=records.filter(r=>{
+  const st=String(r.status||'').trim().toUpperCase().replace(/\\s+/g,'_');
+  if(filterValue==='semua')return true;
+  if(filterValue==='lunas')return st==='LUNAS';
+  if(filterValue==='cicil')return st==='CICIL';
+  return ['BELUM','BELUM_BAYAR','MENUNGGU','BELUM_LUNAS'].includes(st);
+ });
+ if(records.length===0)return locked('Tidak ada data untuk pilihan ini','Coba pilih status tagihan lain.');
+ const items=records.map(r=>{
   const name=type==='pelanggan'?r.nama:(r.id||'Tagihan');
   const sub=type==='pelanggan'?(r.paket||'Paket belum diisi'):(r.periode||'Periode belum diisi');
   const amount=type==='pelanggan'?money(r.tarif):money(r.nominal);
